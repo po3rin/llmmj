@@ -1,0 +1,534 @@
+2025-06-14 22:22:59,473 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-14 22:22:59,473 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-14 22:28:50,814 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-14 22:28:56,056 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-14 22:28:59,947 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-14 22:29:04,611 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-14 22:29:32,724 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-14 22:29:32,734 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-14 22:30:49,761 - api.fast_api - INFO - Health check requested
+2025-06-14 22:31:07,335 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-15 00:46:54,067 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 00:46:54,067 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 00:47:29,599 - api.fast_api - INFO - Health check requested
+2025-06-15 00:48:25,223 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-15 00:50:28,954 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-15 00:50:28,994 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-15 00:51:29,610 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-15 00:53:29,344 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 00:53:29,344 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 00:54:35,868 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 00:54:35,869 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 00:54:37,004 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 00:54:37,004 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 00:59:14,664 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 00:59:14,665 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:00:04,255 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:00:04,305 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:00:04,317 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:00:04,354 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:00:15,055 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:00:15,056 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:00:15,056 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:00:15,059 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:00:29,444 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 01:00:29,447 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '2m', '3m', '5m', '5m', '3p', '4p', '6p', '7p', '8p', '9p', '2s', '3s', '4s'], win_tile='4s', dora_indicators=None, is_riichi=True, is_tsumo=True, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind='east', round_wind=None, paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 01:00:29,447 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '2m', '3m', '5m', '5m', '3p', '4p', '6p', '7p', '8p', '9p', '2s', '3s', '4s']
+2025-06-15 01:00:29,448 - api.mahjong_utils - INFO - Calculation result: hand_not_winning
+2025-06-15 01:00:29,448 - api.mahjong_utils - INFO - Calculation result: han=None, fu=None, score=None
+2025-06-15 01:00:29,448 - api.mahjong_utils - ERROR - Error during score calculation: 'NoneType' object has no attribute 'main'
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/api/mahjong_utils.py", line 129, in calculate_score
+    score=result.cost.main,
+          ^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'main'
+2025-06-15 01:00:29,450 - api.fast_api - ERROR - Error during score calculation: 'NoneType' object has no attribute 'main'
+2025-06-15 01:00:29,451 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 400 Bad Request"
+2025-06-15 01:00:29,452 - fastapi_mcp.server - ERROR - Error calling calculate
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/.venv/lib/python3.12/site-packages/fastapi_mcp/server.py", line 435, in _execute_api_tool
+    raise Exception(
+Exception: Error calling calculate. Status code: 400. Response: {"detail":"'NoneType' object has no attribute 'main'"}
+2025-06-15 01:00:34,645 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 01:00:34,647 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '2m', '3m', '5m', '5m', '3p', '4p', '6p', '7p', '8p', '9p', '2s', '3s'], win_tile='4s', dora_indicators=None, is_riichi=True, is_tsumo=True, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind=None, round_wind=None, paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 01:00:34,647 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '2m', '3m', '5m', '5m', '3p', '4p', '6p', '7p', '8p', '9p', '2s', '3s']
+2025-06-15 01:00:34,648 - api.mahjong_utils - INFO - Calculation result: winning_tile_not_in_hand
+2025-06-15 01:00:34,648 - api.mahjong_utils - INFO - Calculation result: han=None, fu=None, score=None
+2025-06-15 01:00:34,648 - api.mahjong_utils - ERROR - Error during score calculation: 'NoneType' object has no attribute 'main'
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/api/mahjong_utils.py", line 129, in calculate_score
+    score=result.cost.main,
+          ^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'main'
+2025-06-15 01:00:34,649 - api.fast_api - ERROR - Error during score calculation: 'NoneType' object has no attribute 'main'
+2025-06-15 01:00:34,649 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 400 Bad Request"
+2025-06-15 01:00:34,650 - fastapi_mcp.server - ERROR - Error calling calculate
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/.venv/lib/python3.12/site-packages/fastapi_mcp/server.py", line 435, in _execute_api_tool
+    raise Exception(
+Exception: Error calling calculate. Status code: 400. Response: {"detail":"'NoneType' object has no attribute 'main'"}
+2025-06-15 01:02:40,824 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 01:02:40,826 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s'], win_tile='4s', dora_indicators=None, is_riichi=True, is_tsumo=True, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind=None, round_wind=None, paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 01:02:40,826 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s']
+2025-06-15 01:02:40,827 - api.mahjong_utils - INFO - Calculation result: winning_tile_not_in_hand
+2025-06-15 01:02:40,827 - api.mahjong_utils - INFO - Calculation result: han=None, fu=None, score=None
+2025-06-15 01:02:40,827 - api.mahjong_utils - ERROR - Error during score calculation: 'NoneType' object has no attribute 'main'
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/api/mahjong_utils.py", line 129, in calculate_score
+AttributeError: 'NoneType' object has no attribute 'main'
+2025-06-15 01:02:40,828 - api.fast_api - ERROR - Error during score calculation: 'NoneType' object has no attribute 'main'
+2025-06-15 01:02:40,829 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 400 Bad Request"
+2025-06-15 01:02:40,829 - fastapi_mcp.server - ERROR - Error calling calculate
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/.venv/lib/python3.12/site-packages/fastapi_mcp/server.py", line 435, in _execute_api_tool
+    raise Exception(
+Exception: Error calling calculate. Status code: 400. Response: {"detail":"'NoneType' object has no attribute 'main'"}
+2025-06-15 01:04:24,144 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 01:04:24,145 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s'], win_tile='4s', dora_indicators=None, is_riichi=True, is_tsumo=True, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind=None, round_wind=None, paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 01:04:24,145 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s']
+2025-06-15 01:04:24,146 - api.mahjong_utils - INFO - Calculation result: 3 han, 20 fu
+2025-06-15 01:04:24,146 - api.mahjong_utils - INFO - Calculation result: han=3, fu=20, score={'main': 1300, 'main_bonus': 0, 'additional': 700, 'additional_bonus': 0, 'kyoutaku_bonus': 0, 'total': 2700, 'yaku_level': ''}
+2025-06-15 01:04:24,147 - api.mahjong_utils - ERROR - Error during score calculation: 'dict' object has no attribute 'main'
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/api/mahjong_utils.py", line 129, in calculate_score
+AttributeError: 'dict' object has no attribute 'main'
+2025-06-15 01:04:24,147 - api.fast_api - ERROR - Error during score calculation: 'dict' object has no attribute 'main'
+2025-06-15 01:04:24,148 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 400 Bad Request"
+2025-06-15 01:04:24,148 - fastapi_mcp.server - ERROR - Error calling calculate
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/.venv/lib/python3.12/site-packages/fastapi_mcp/server.py", line 435, in _execute_api_tool
+    raise Exception(
+Exception: Error calling calculate. Status code: 400. Response: {"detail":"'dict' object has no attribute 'main'"}
+2025-06-15 01:06:14,127 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:06:14,127 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:06:29,918 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-15 01:08:19,267 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:08:19,268 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:08:49,147 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-15 01:08:53,776 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-15 01:09:32,049 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:09:32,049 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:09:33,493 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:09:33,493 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:09:34,534 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:09:34,534 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:09:35,796 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:09:35,796 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:10:05,124 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:10:05,124 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:10:17,157 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-15 01:10:17,165 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-15 01:10:26,394 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-15 01:10:30,039 - root - WARNING - Failed to validate request: Received request before initialization was complete
+2025-06-15 01:10:40,149 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:10:40,149 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:11:28,340 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:11:28,340 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:11:28,340 - __main__ - INFO - Starting MCP server...
+2025-06-15 01:12:50,498 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:12:50,502 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:12:50,503 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:12:50,512 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:13:10,447 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 01:13:10,452 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s'], win_tile='4s', dora_indicators=None, is_riichi=True, is_tsumo=True, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind=None, round_wind=None, paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 01:13:10,452 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s']
+2025-06-15 01:13:10,454 - api.mahjong_utils - INFO - Calculation result: 3 han, 20 fu
+2025-06-15 01:13:10,454 - api.mahjong_utils - INFO - Calculation result: han=3, fu=20, score={'main': 1300, 'main_bonus': 0, 'additional': 700, 'additional_bonus': 0, 'kyoutaku_bonus': 0, 'total': 2700, 'yaku_level': ''}
+2025-06-15 01:13:10,454 - api.mahjong_utils - ERROR - Error during score calculation: 'Tsumo' object has no attribute 'han'
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/api/mahjong_utils.py", line 130, in calculate_score
+    yaku=[{"name": yaku.name, "han": yaku.han} for yaku in result.yaku]
+                                     ^^^^^^^^
+AttributeError: 'Tsumo' object has no attribute 'han'
+2025-06-15 01:13:10,456 - api.fast_api - ERROR - Error during score calculation: 'Tsumo' object has no attribute 'han'
+2025-06-15 01:13:10,457 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 400 Bad Request"
+2025-06-15 01:13:10,458 - fastapi_mcp.server - ERROR - Error calling calculate
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/.venv/lib/python3.12/site-packages/fastapi_mcp/server.py", line 435, in _execute_api_tool
+    raise Exception(
+Exception: Error calling calculate. Status code: 400. Response: {"detail":"'Tsumo' object has no attribute 'han'"}
+2025-06-15 01:13:15,475 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 01:13:15,476 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s'], win_tile='4s', dora_indicators=None, is_riichi=True, is_tsumo=True, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind=None, round_wind=None, paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 01:13:15,476 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s']
+2025-06-15 01:13:15,477 - api.mahjong_utils - INFO - Calculation result: 3 han, 20 fu
+2025-06-15 01:13:15,477 - api.mahjong_utils - INFO - Calculation result: han=3, fu=20, score={'main': 1300, 'main_bonus': 0, 'additional': 700, 'additional_bonus': 0, 'kyoutaku_bonus': 0, 'total': 2700, 'yaku_level': ''}
+2025-06-15 01:13:15,477 - api.mahjong_utils - ERROR - Error during score calculation: 'Tsumo' object has no attribute 'han'
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/api/mahjong_utils.py", line 130, in calculate_score
+    yaku=[{"name": yaku.name, "han": yaku.han} for yaku in result.yaku]
+                                     ^^^^^^^^
+AttributeError: 'Tsumo' object has no attribute 'han'
+2025-06-15 01:13:15,478 - api.fast_api - ERROR - Error during score calculation: 'Tsumo' object has no attribute 'han'
+2025-06-15 01:13:15,479 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 400 Bad Request"
+2025-06-15 01:13:15,479 - fastapi_mcp.server - ERROR - Error calling calculate
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/.venv/lib/python3.12/site-packages/fastapi_mcp/server.py", line 435, in _execute_api_tool
+    raise Exception(
+Exception: Error calling calculate. Status code: 400. Response: {"detail":"'Tsumo' object has no attribute 'han'"}
+2025-06-15 01:16:31,134 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:16:31,134 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:16:31,134 - __main__ - INFO - Starting MCP server...
+2025-06-15 01:16:38,785 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:16:38,787 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:16:38,788 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:16:38,790 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:16:39,008 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:16:39,009 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:16:39,010 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:16:39,060 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:16:52,932 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 01:16:52,936 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s'], win_tile='4s', dora_indicators=None, is_riichi=True, is_tsumo=True, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind=None, round_wind=None, paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 01:16:52,936 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s']
+2025-06-15 01:16:52,938 - api.mahjong_utils - ERROR - Error during score calculation: 'Tsumo' object has no attribute 'han'
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/api/mahjong_utils.py", line 138, in calculate_score
+    "han": yaku.han
+           ^^^^^^^^
+AttributeError: 'Tsumo' object has no attribute 'han'
+2025-06-15 01:16:52,940 - api.fast_api - ERROR - Error during score calculation: 'Tsumo' object has no attribute 'han'
+2025-06-15 01:16:52,941 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 400 Bad Request"
+2025-06-15 01:16:52,941 - fastapi_mcp.server - ERROR - Error calling calculate
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/.venv/lib/python3.12/site-packages/fastapi_mcp/server.py", line 435, in _execute_api_tool
+    raise Exception(
+Exception: Error calling calculate. Status code: 400. Response: {"detail":"'Tsumo' object has no attribute 'han'"}
+2025-06-15 01:16:57,704 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 01:16:57,705 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s'], win_tile='4s', dora_indicators=None, is_riichi=True, is_tsumo=True, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind=None, round_wind=None, paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 01:16:57,705 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s']
+2025-06-15 01:16:57,705 - api.mahjong_utils - ERROR - Error during score calculation: 'Tsumo' object has no attribute 'han'
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/api/mahjong_utils.py", line 138, in calculate_score
+    "han": yaku.han
+           ^^^^^^^^
+AttributeError: 'Tsumo' object has no attribute 'han'
+2025-06-15 01:16:57,706 - api.fast_api - ERROR - Error during score calculation: 'Tsumo' object has no attribute 'han'
+2025-06-15 01:16:57,706 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 400 Bad Request"
+2025-06-15 01:16:57,706 - fastapi_mcp.server - ERROR - Error calling calculate
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/.venv/lib/python3.12/site-packages/fastapi_mcp/server.py", line 435, in _execute_api_tool
+    raise Exception(
+Exception: Error calling calculate. Status code: 400. Response: {"detail":"'Tsumo' object has no attribute 'han'"}
+2025-06-15 01:17:51,562 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:17:51,562 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:17:51,562 - __main__ - INFO - Starting MCP server...
+2025-06-15 01:17:56,614 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:17:56,615 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:17:56,616 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:17:56,621 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:17:56,708 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:17:56,710 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:17:56,711 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:17:56,752 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:18:13,581 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 01:18:13,583 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s'], win_tile='4s', dora_indicators=None, is_riichi=True, is_tsumo=True, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind=None, round_wind=None, paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 01:18:13,583 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s']
+2025-06-15 01:18:13,584 - api.mahjong_utils - INFO - Calculation result: 3 han, 20 fu
+2025-06-15 01:18:13,584 - api.mahjong_utils - ERROR - Error during score calculation: 'Tsumo' object has no attribute 'han'
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/api/mahjong_utils.py", line 140, in calculate_score
+    "han": yaku.han
+           ^^^^^^^^
+AttributeError: 'Tsumo' object has no attribute 'han'
+2025-06-15 01:18:13,585 - api.fast_api - ERROR - Error during score calculation: 'Tsumo' object has no attribute 'han'
+2025-06-15 01:18:13,586 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 400 Bad Request"
+2025-06-15 01:18:13,586 - fastapi_mcp.server - ERROR - Error calling calculate
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/.venv/lib/python3.12/site-packages/fastapi_mcp/server.py", line 435, in _execute_api_tool
+    raise Exception(
+Exception: Error calling calculate. Status code: 400. Response: {"detail":"'Tsumo' object has no attribute 'han'"}
+2025-06-15 01:22:12,627 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:22:12,627 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:22:12,627 - __main__ - INFO - Starting MCP server...
+2025-06-15 01:22:22,322 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:22:22,324 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:22:22,325 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:22:22,327 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:22:22,763 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:22:22,764 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:22:22,766 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:22:22,806 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:22:23,901 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:22:23,902 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:22:23,903 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:22:23,910 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:22:31,100 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 01:22:31,102 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s'], win_tile='4s', dora_indicators=None, is_riichi=True, is_tsumo=True, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind=None, round_wind=None, paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 01:22:31,103 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s']
+2025-06-15 01:22:31,104 - api.mahjong_utils - INFO - Calculation result: han=3, fu=20, score={'main': 1300, 'main_bonus': 0, 'additional': 700, 'additional_bonus': 0, 'kyoutaku_bonus': 0, 'total': 2700, 'yaku_level': ''}
+2025-06-15 01:22:31,104 - api.mahjong_utils - ERROR - Error during score calculation: 4 validation errors for ScoreResponse
+score
+  Input should be a valid integer [type=int_type, input_value={'main': 1300, 'main_bonu... 2700, 'yaku_level': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/int_type
+yaku.0
+  Input should be a valid dictionary [type=dict_type, input_value=Menzen Tsumo, input_type=Tsumo]
+    For further information visit https://errors.pydantic.dev/2.11/v/dict_type
+yaku.1
+  Input should be a valid dictionary [type=dict_type, input_value=Riichi, input_type=Riichi]
+    For further information visit https://errors.pydantic.dev/2.11/v/dict_type
+yaku.2
+  Input should be a valid dictionary [type=dict_type, input_value=Pinfu, input_type=Pinfu]
+    For further information visit https://errors.pydantic.dev/2.11/v/dict_type
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/api/mahjong_utils.py", line 135, in calculate_score
+    return ScoreResponse(
+           ^^^^^^^^^^^^^^
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/.venv/lib/python3.12/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 4 validation errors for ScoreResponse
+score
+  Input should be a valid integer [type=int_type, input_value={'main': 1300, 'main_bonu... 2700, 'yaku_level': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/int_type
+yaku.0
+  Input should be a valid dictionary [type=dict_type, input_value=Menzen Tsumo, input_type=Tsumo]
+    For further information visit https://errors.pydantic.dev/2.11/v/dict_type
+yaku.1
+  Input should be a valid dictionary [type=dict_type, input_value=Riichi, input_type=Riichi]
+    For further information visit https://errors.pydantic.dev/2.11/v/dict_type
+yaku.2
+  Input should be a valid dictionary [type=dict_type, input_value=Pinfu, input_type=Pinfu]
+    For further information visit https://errors.pydantic.dev/2.11/v/dict_type
+2025-06-15 01:22:31,107 - api.fast_api - ERROR - Error during score calculation: 4 validation errors for ScoreResponse
+score
+  Input should be a valid integer [type=int_type, input_value={'main': 1300, 'main_bonu... 2700, 'yaku_level': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/int_type
+yaku.0
+  Input should be a valid dictionary [type=dict_type, input_value=Menzen Tsumo, input_type=Tsumo]
+    For further information visit https://errors.pydantic.dev/2.11/v/dict_type
+yaku.1
+  Input should be a valid dictionary [type=dict_type, input_value=Riichi, input_type=Riichi]
+    For further information visit https://errors.pydantic.dev/2.11/v/dict_type
+yaku.2
+  Input should be a valid dictionary [type=dict_type, input_value=Pinfu, input_type=Pinfu]
+    For further information visit https://errors.pydantic.dev/2.11/v/dict_type
+2025-06-15 01:22:31,108 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 400 Bad Request"
+2025-06-15 01:22:31,108 - fastapi_mcp.server - ERROR - Error calling calculate
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/.venv/lib/python3.12/site-packages/fastapi_mcp/server.py", line 435, in _execute_api_tool
+    raise Exception(
+Exception: Error calling calculate. Status code: 400. Response: {"detail":"4 validation errors for ScoreResponse\nscore\n  Input should be a valid integer [type=int_type, input_value={'main': 1300, 'main_bonu... 2700, 'yaku_level': ''}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/int_type\nyaku.0\n  Input should be a valid dictionary [type=dict_type, input_value=Menzen Tsumo, input_type=Tsumo]\n    For further information visit https://errors.pydantic.dev/2.11/v/dict_type\nyaku.1\n  Input should be a valid dictionary [type=dict_type, input_value=Riichi, input_type=Riichi]\n    For further information visit https://errors.pydantic.dev/2.11/v/dict_type\nyaku.2\n  Input should be a valid dictionary [type=dict_type, input_value=Pinfu, input_type=Pinfu]\n    For further information visit https://errors.pydantic.dev/2.11/v/dict_type"}
+2025-06-15 01:28:26,337 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:28:26,338 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:28:26,338 - __main__ - INFO - Starting MCP server...
+2025-06-15 01:28:33,841 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:28:33,842 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:28:33,842 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:28:33,847 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:28:35,215 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:28:35,216 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:28:35,216 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:28:35,261 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:28:35,637 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:28:35,638 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:28:35,638 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:28:35,646 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:28:53,003 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 01:28:53,006 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s'], win_tile='4s', dora_indicators=None, is_riichi=True, is_tsumo=True, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind=None, round_wind=None, paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 01:28:53,006 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s']
+2025-06-15 01:28:53,007 - api.mahjong_utils - ERROR - Error during score calculation: 'HandResponse' object has no attribute 'score'
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/api/mahjong_utils.py", line 142, in calculate_score
+    score=result.score["main"],
+          ^^^^^^^^^^^^
+AttributeError: 'HandResponse' object has no attribute 'score'
+2025-06-15 01:28:53,010 - api.fast_api - ERROR - Error during score calculation: 'HandResponse' object has no attribute 'score'
+2025-06-15 01:28:53,010 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 400 Bad Request"
+2025-06-15 01:28:53,011 - fastapi_mcp.server - ERROR - Error calling calculate
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/.venv/lib/python3.12/site-packages/fastapi_mcp/server.py", line 435, in _execute_api_tool
+    raise Exception(
+Exception: Error calling calculate. Status code: 400. Response: {"detail":"'HandResponse' object has no attribute 'score'"}
+2025-06-15 01:29:14,550 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:29:14,550 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:29:14,550 - __main__ - INFO - Starting MCP server...
+2025-06-15 01:29:25,754 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:29:25,755 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:29:25,756 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:29:25,758 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:29:26,768 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:29:26,770 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:29:26,772 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:29:26,819 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:29:28,219 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:29:28,220 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:29:28,220 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:29:28,227 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:29:34,247 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 01:29:34,249 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s'], win_tile='4s', dora_indicators=None, is_riichi=True, is_tsumo=True, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind=None, round_wind=None, paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 01:29:34,250 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s']
+2025-06-15 01:29:34,251 - api.fast_api - INFO - Score calculation result: han=3 fu=20 score=1300 yaku=[] error=None
+2025-06-15 01:29:34,252 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 200 OK"
+2025-06-15 01:35:04,128 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:35:04,128 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:35:04,128 - __main__ - INFO - Starting MCP server...
+2025-06-15 01:35:21,808 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:35:21,809 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:35:21,810 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:35:21,816 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:35:21,974 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:35:21,974 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:35:21,976 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:35:22,012 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:35:24,676 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:35:24,677 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:35:24,679 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:35:24,687 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:35:44,460 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 01:35:44,465 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s'], win_tile='4s', dora_indicators=None, is_riichi=True, is_tsumo=True, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind='east', round_wind='east', paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 01:35:44,465 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s']
+2025-06-15 01:35:44,467 - api.mahjong_utils - ERROR - Error during score calculation: 3 validation errors for ScoreResponse
+yaku.0
+  Input should be a valid string [type=string_type, input_value=Menzen Tsumo, input_type=Tsumo]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+yaku.1
+  Input should be a valid string [type=string_type, input_value=Riichi, input_type=Riichi]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+yaku.2
+  Input should be a valid string [type=string_type, input_value=Pinfu, input_type=Pinfu]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/api/mahjong_utils.py", line 139, in calculate_score
+    return ScoreResponse(
+           ^^^^^^^^^^^^^^
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/.venv/lib/python3.12/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 3 validation errors for ScoreResponse
+yaku.0
+  Input should be a valid string [type=string_type, input_value=Menzen Tsumo, input_type=Tsumo]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+yaku.1
+  Input should be a valid string [type=string_type, input_value=Riichi, input_type=Riichi]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+yaku.2
+  Input should be a valid string [type=string_type, input_value=Pinfu, input_type=Pinfu]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+2025-06-15 01:35:44,472 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 500 Internal Server Error"
+2025-06-15 01:35:44,472 - fastapi_mcp.server - ERROR - Error calling calculate
+Traceback (most recent call last):
+  File "/Users/hiromu.nakamura.001/ghq/github.com/po3rin/llmmj/.venv/lib/python3.12/site-packages/fastapi_mcp/server.py", line 435, in _execute_api_tool
+    raise Exception(
+Exception: Error calling calculate. Status code: 500. Response: Internal Server Error
+2025-06-15 01:35:44,515 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:35:44,518 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:35:44,518 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:35:44,566 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:38:13,713 - fastapi_mcp.server - INFO - No auth config provided, skipping auth setup
+2025-06-15 01:38:13,714 - fastapi_mcp.server - INFO - MCP server listening at /mcp
+2025-06-15 01:38:13,714 - __main__ - INFO - Starting MCP server...
+2025-06-15 01:38:26,194 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:38:26,195 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:38:26,196 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:38:26,204 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:38:27,551 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:38:27,553 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-06-15 01:38:27,554 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 01:38:27,561 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 01:38:33,517 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 01:38:33,519 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s'], win_tile='4s', dora_indicators=None, is_riichi=True, is_tsumo=True, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind='east', round_wind='east', paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 01:38:33,519 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '2m', '3m', '5m', '5m', '3p', '4p', '5p', '6p', '7p', '8p', '2s', '3s', '4s']
+2025-06-15 01:38:33,521 - api.fast_api - INFO - Score calculation result: han=3 fu=20 score=1300 yaku=['Menzen Tsumo', 'Riichi', 'Pinfu'] fu_details=[{'fu': 20, 'reason': 'base'}] error=None
+2025-06-15 01:38:33,522 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 200 OK"
+2025-06-15 09:34:22,280 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 09:34:22,287 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 17:39:57,891 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 17:39:57,898 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 17:49:57,763 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 17:49:57,770 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 17:59:57,757 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 17:59:57,764 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 18:09:57,763 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 18:09:57,769 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 18:14:38,231 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 18:14:38,232 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z'], win_tile='1m', dora_indicators=['2m'], is_riichi=True, is_tsumo=False, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind='north', round_wind='east', paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 18:14:38,232 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z']
+2025-06-15 18:14:38,233 - api.fast_api - INFO - Score calculation result: han=2 fu=50 score=3200 yaku=['Riichi', 'Dora'] fu_details=[{'fu': 30, 'reason': 'base'}, {'fu': 8, 'reason': 'closed_terminal_pon'}, {'fu': 4, 'reason': 'closed_pon'}, {'fu': 2, 'reason': 'pair_wait'}] error=None
+2025-06-15 18:14:38,233 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 200 OK"
+2025-06-15 18:14:42,802 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 18:14:42,803 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z'], win_tile='1m', dora_indicators=['2m', '7s'], is_riichi=True, is_tsumo=False, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind='north', round_wind='east', paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 18:14:42,803 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z']
+2025-06-15 18:14:42,805 - api.fast_api - INFO - Score calculation result: han=5 fu=50 score=8000 yaku=['Riichi', 'Dora'] fu_details=[{'fu': 30, 'reason': 'base'}, {'fu': 8, 'reason': 'closed_terminal_pon'}, {'fu': 4, 'reason': 'closed_pon'}, {'fu': 2, 'reason': 'pair_wait'}] error=None
+2025-06-15 18:14:42,805 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 200 OK"
+2025-06-15 18:14:47,396 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 18:14:47,398 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z'], win_tile='1m', dora_indicators=['3s'], is_riichi=True, is_tsumo=False, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind='north', round_wind='east', paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 18:14:47,398 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z']
+2025-06-15 18:14:47,399 - api.fast_api - INFO - Score calculation result: han=1 fu=50 score=1600 yaku=['Riichi'] fu_details=[{'fu': 30, 'reason': 'base'}, {'fu': 8, 'reason': 'closed_terminal_pon'}, {'fu': 4, 'reason': 'closed_pon'}, {'fu': 2, 'reason': 'pair_wait'}] error=None
+2025-06-15 18:14:47,400 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 200 OK"
+2025-06-15 18:14:51,930 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 18:14:51,931 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z'], win_tile='1m', dora_indicators=['5s'], is_riichi=True, is_tsumo=False, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind='north', round_wind='east', paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 18:14:51,931 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z']
+2025-06-15 18:14:51,932 - api.fast_api - INFO - Score calculation result: han=2 fu=50 score=3200 yaku=['Riichi', 'Dora'] fu_details=[{'fu': 30, 'reason': 'base'}, {'fu': 8, 'reason': 'closed_terminal_pon'}, {'fu': 4, 'reason': 'closed_pon'}, {'fu': 2, 'reason': 'pair_wait'}] error=None
+2025-06-15 18:14:51,933 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 200 OK"
+2025-06-15 18:14:56,753 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 18:14:56,754 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z'], win_tile='1m', dora_indicators=['5s', '9s'], is_riichi=True, is_tsumo=False, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind='north', round_wind='east', paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 18:14:56,755 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z']
+2025-06-15 18:14:56,756 - api.fast_api - INFO - Score calculation result: han=2 fu=50 score=3200 yaku=['Riichi', 'Dora'] fu_details=[{'fu': 30, 'reason': 'base'}, {'fu': 8, 'reason': 'closed_terminal_pon'}, {'fu': 4, 'reason': 'closed_pon'}, {'fu': 2, 'reason': 'pair_wait'}] error=None
+2025-06-15 18:14:56,756 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 200 OK"
+2025-06-15 18:15:01,139 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 18:15:01,140 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z'], win_tile='1m', dora_indicators=['5s', '7s'], is_riichi=True, is_tsumo=False, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind='north', round_wind='east', paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 18:15:01,140 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z']
+2025-06-15 18:15:01,141 - api.fast_api - INFO - Score calculation result: han=5 fu=50 score=8000 yaku=['Riichi', 'Dora'] fu_details=[{'fu': 30, 'reason': 'base'}, {'fu': 8, 'reason': 'closed_terminal_pon'}, {'fu': 4, 'reason': 'closed_pon'}, {'fu': 2, 'reason': 'pair_wait'}] error=None
+2025-06-15 18:15:01,141 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 200 OK"
+2025-06-15 18:15:06,276 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 18:15:06,277 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z'], win_tile='1m', dora_indicators=['6s', '7s'], is_riichi=True, is_tsumo=False, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind='north', round_wind='east', paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 18:15:06,277 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z']
+2025-06-15 18:15:06,278 - api.fast_api - INFO - Score calculation result: han=5 fu=50 score=8000 yaku=['Riichi', 'Dora'] fu_details=[{'fu': 30, 'reason': 'base'}, {'fu': 8, 'reason': 'closed_terminal_pon'}, {'fu': 4, 'reason': 'closed_pon'}, {'fu': 2, 'reason': 'pair_wait'}] error=None
+2025-06-15 18:15:06,279 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 200 OK"
+2025-06-15 18:15:11,364 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 18:15:11,365 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z'], win_tile='1m', dora_indicators=['6s'], is_riichi=True, is_tsumo=False, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind='north', round_wind='east', paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 18:15:11,365 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z']
+2025-06-15 18:15:11,367 - api.fast_api - INFO - Score calculation result: han=2 fu=50 score=3200 yaku=['Riichi', 'Dora'] fu_details=[{'fu': 30, 'reason': 'base'}, {'fu': 8, 'reason': 'closed_terminal_pon'}, {'fu': 4, 'reason': 'closed_pon'}, {'fu': 2, 'reason': 'pair_wait'}] error=None
+2025-06-15 18:15:11,367 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 200 OK"
+2025-06-15 18:15:16,240 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2025-06-15 18:15:16,242 - api.fast_api - INFO - Received score calculation request: hand=Hand(tiles=['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z'], win_tile='1m', dora_indicators=['1m', '6s'], is_riichi=True, is_tsumo=False, is_ippatsu=False, is_rinshan=False, is_chankan=False, is_haitei=False, is_houtei=False, is_daburu_riichi=False, is_nagashi_mangan=False, is_tenhou=False, is_chiihou=False, is_renhou=False, is_open_riichi=False, player_wind='north', round_wind='east', paarenchan=0, kyoutaku_number=0, tsumi_number=0) melds=None
+2025-06-15 18:15:16,242 - api.mahjong_utils - INFO - Calculating score for hand: ['1m', '1m', '2m', '3m', '4m', '5s', '6s', '7s', '8s', '8s', '8s', '1z', '1z', '1z']
+2025-06-15 18:15:16,243 - api.fast_api - INFO - Score calculation result: han=3 fu=50 score=6400 yaku=['Riichi', 'Dora'] fu_details=[{'fu': 30, 'reason': 'base'}, {'fu': 8, 'reason': 'closed_terminal_pon'}, {'fu': 4, 'reason': 'closed_pon'}, {'fu': 2, 'reason': 'pair_wait'}] error=None
+2025-06-15 18:15:16,243 - httpx - INFO - HTTP Request: POST http://apiserver/calculate "HTTP/1.1 200 OK"
+2025-06-15 18:19:57,765 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 18:19:57,773 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 18:29:57,768 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 18:29:57,775 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 18:39:57,771 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 18:39:57,781 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 18:49:57,784 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 18:49:57,790 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 18:59:57,776 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 18:59:57,785 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 19:09:57,785 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 19:09:57,793 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 19:37:30,541 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 19:37:30,550 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 20:53:37,466 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 20:53:37,472 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 21:03:37,469 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 21:03:37,478 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 21:30:15,406 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 21:30:15,414 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 21:40:15,412 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 21:40:15,420 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 21:50:15,420 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 21:50:15,424 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 22:00:15,430 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 22:00:15,437 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 22:26:11,130 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 22:26:11,136 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 23:20:18,145 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 23:20:18,150 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 23:30:18,153 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 23:30:18,160 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 23:40:18,165 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 23:40:18,173 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-15 23:50:18,173 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-15 23:50:18,181 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-16 00:00:18,179 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-16 00:00:18,185 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-16 00:10:18,191 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-16 00:10:18,197 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-16 00:20:18,210 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-16 00:20:18,216 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-16 01:13:34,296 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-16 01:13:34,303 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-16 04:58:09,547 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-16 04:58:09,553 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
+2025-06-16 08:20:49,893 - mcp.server.lowlevel.server - INFO - Processing request of type ListResourcesRequest
+2025-06-16 08:20:49,899 - mcp.server.lowlevel.server - INFO - Processing request of type ListPromptsRequest
