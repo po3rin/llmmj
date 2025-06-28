@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 class Hand(BaseModel):
     tiles: List[str] = Field(
         ...,
-        description="136形式の配列であり和了時の手牌です。14枚になります。例: ['1m', '2m', '3m', '4m', '4m', '5p', '5p', '5p', '7p', '8p', '9p', '1z', '1z', '1z']",
+        description="136形式の配列であり和了時の手牌です。例: ['1m', '2m', '3m', '4m', '4m', '5p', '5p', '5p', '7p', '8p', '9p', '1z', '1z', '1z']",
     )
     melds: Optional[List[List[str]]] = Field(
         None,

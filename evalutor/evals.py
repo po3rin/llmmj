@@ -78,17 +78,17 @@ class MahjongEvaluator:
                 expected_han=data["answer"]["han"],
                 expected_fu=data["answer"]["fu"],
             )
-        # 手牌の枚数チェック
-        if hand.tiles and len(hand.tiles) != 14:
-            return EvalResult(
-                model=self.model_name,
-                correct=False,
-                is_error=False,
-                reason="Invalid tile count in hand",
-                hand=hand,
-                expected_han=data["answer"]["han"],
-                expected_fu=data["answer"]["fu"],
-            )
+        # # 手牌の枚数チェック
+        # if hand.tiles and len(hand.tiles) != 14:
+        #     return EvalResult(
+        #         model=self.model_name,
+        #         correct=False,
+        #         is_error=False,
+        #         reason="Invalid tile count in hand",
+        #         hand=hand,
+        #         expected_han=data["answer"]["han"],
+        #         expected_fu=data["answer"]["fu"],
+        #     )
         # 和了牌の形式チェック
         if hand.win_tile and hand.win_tile not in hand.tiles:
             return EvalResult(
@@ -212,15 +212,17 @@ class MultiModelEvaluator:
         self,
         models: List[BaseChatModel],
         query_template: str = generate_question_prompt_template,
+        use_tools: bool = False,
     ):
         self.models = models
         self.query_template = query_template
+        self.use_tools = use_tools
 
     def evals(self, dataset: List[Dict[str, Any]]) -> pd.DataFrame:
         eval_results: List[pd.DataFrame] = []
         for model in self.models:
             generator = MahjongQuestionGenerator(
-                model, query_template=self.query_template
+                model, query_template=self.query_template, use_tools=self.use_tools
             )
             evaluator = MahjongEvaluator(generator)
             eval_results.append(evaluator.evals(dataset))

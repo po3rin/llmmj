@@ -9,7 +9,7 @@ from langchain_core.output_parsers import JsonOutputParser
 from entity.entity import Hand
 from prompts.prompts import (
     generate_question_prompt_template,
-    generate_question_with_mcp_prompt_template,
+    generate_question_with_tools_prompt_template,
 )
 from llmmj.tools import CalculateMahjongScoreTool, ValidateMahjongHandTool, CheckWinningHandTool
 
@@ -18,25 +18,25 @@ logger = logging.getLogger(__name__)
 
 class MahjongQuestionGenerator:
     def __init__(
-        self, model, use_mcp: bool = False, query_template: Optional[str] = None
+        self, model, use_tools: bool = False, query_template: Optional[str] = None
     ):
         self.model = model
         self.model_name = getattr(model, "model_name", getattr(model, "model", "unknown"))
         self.parser = JsonOutputParser(pydantic_object=Hand)
-        self.use_mcp = use_mcp
+        self.use_tools = use_tools
 
         # Choose the appropriate template based on whether MCP is enabled
         if query_template:
             self.query_template = query_template
-        elif use_mcp:
-            self.query_template = generate_question_with_mcp_prompt_template
+        elif use_tools:
+            self.query_template = generate_question_with_tools_prompt_template
         else:
             self.query_template = generate_question_prompt_template
 
         self.tools = []
         self.agent_executor = None
 
-        if use_mcp:
+        if use_tools:
             self._setup_mcp_tools()
 
     def _setup_mcp_tools(self):
@@ -65,12 +65,12 @@ class MahjongQuestionGenerator:
             
         except Exception as e:
             logger.error(f"Failed to setup MCP-style tools: {e}")
-            self.use_mcp = False
+            self.use_tools = False
             self.query_template = generate_question_prompt_template
 
     def generate_question(self, query: str) -> Dict[str, Any]:
         """Generate a Mahjong question based on the query."""
-        if self.use_mcp and self.agent_executor:
+        if self.use_tools and self.agent_executor:
             return self._generate_question_with_mcp(query)
         else:
             return self._generate_question_simple(query)

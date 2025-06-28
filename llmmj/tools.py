@@ -17,6 +17,16 @@ class MahjongScoreInput(BaseModel):
     is_tsumo: bool = Field(default=False, description="自摸和了か")
     player_wind: Optional[str] = Field(default=None, description="自風")
     round_wind: Optional[str] = Field(default=None, description="場風")
+    is_ippatsu: bool = Field(default=False, description="一発ツモか")
+    is_rinshan: bool = Field(default=False, description="嶺上開花ツモか")
+    is_chankan: bool = Field(default=False, description="槍槓ツモか")
+    is_haitei: bool = Field(default=False, description="海底摸月ツモか")
+    is_houtei: bool = Field(default=False, description="河底撈魚ツモか")
+    is_daburu_riichi: bool = Field(default=False, description="ダブル立直宣言か")
+    is_nagashi_mangan: bool = Field(default=False, description="流し満貫宣言か")
+    is_tenhou: bool = Field(default=False, description="天和か")
+    is_chiihou: bool = Field(default=False, description="地和か")
+    is_renhou: bool = Field(default=False, description="人和か")
 
 
 class MahjongValidationInput(BaseModel):
@@ -68,6 +78,8 @@ class CalculateMahjongScoreTool(BaseTool):
             # Calculate score
             request = ScoreRequest(hand=hand)
             result = calculate_score(request)
+            
+            print(f"tools result: {result}")
             
             return {
                 "han": result.han,
