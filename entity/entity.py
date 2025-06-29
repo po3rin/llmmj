@@ -1,16 +1,41 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field
+
+
+class MeldInfo(BaseModel):
+    tiles: List[str] = Field(
+        ...,
+        description="鳴きの牌。136形式の配列。例: ['1m', '2m', '3m'] (チー), ['5p', '5p', '5p'] (ポン), ['1z', '1z', '1z', '1z'] (カン)",
+    )
+    is_open: bool = Field(
+        True,
+        description="明刻かどうか。True: 明刻（ミンカン、ポン、チー）、False: 暗刻（アンカン）。カン以外の鳴きは常にTrue。",
+    )
 
 
 class Hand(BaseModel):
     tiles: List[str] = Field(
         ...,
-        description="136形式の配列であり和了時の手牌です。例: ['1m', '2m', '3m', '4m', '4m', '5p', '5p', '5p', '7p', '8p', '9p', '1z', '1z', '1z']",
+        description="""136形式の配列であり和了時の手牌です。
+        重要: meldsで指定された牌も含めて、手牌の全ての牌を含める必要があります。
+        例: 手牌10枚+暗槓4枚+和了牌1枚の場合、tiles=['1m', '2m', '3m', '4m', '4m', '5p', '5p', '5p', '7p', '8p', '1z', '1z', '1z', '1z', '1s']のように15枚全てを指定。
+""",
     )
-    melds: Optional[List[List[str]]] = Field(
+    melds: Optional[List[Union[List[str], MeldInfo]]] = Field(
         None,
-        description="鳴きの情報。鳴きは136形式の配列であり、それらが配列になっています。例: [['1m', '2m', '3m'], ['4m', '5m', '6m']]",
+        description="""鳴きの情報。以下の2つの形式をサポート:
+        1. List[str]形式（後方互換性）: ['5p', '5p', '5p'] - 常に明刻として扱われる
+        2. MeldInfo形式: MeldInfo(tiles=['1z', '1z', '1z', '1z'], is_open=False)
+           - tiles: 鳴きの牌（136形式）。この牌はtilesフィールドにも含まれている必要があります。
+           - is_open: True=明刻（ミンカン、ポン、チー）、False=暗刻（アンカン）
+        
+        重要: meldsで指定した牌は、tilesフィールドにも重複して含める必要があります。
+        例: 暗槓の場合
+            tiles=['1m', '2m', '3m', '4m', '5m', '6m', '7m', '8m', '9m', '1s', '1z', '1z', '1z', '1z', '1s'] (15枚)
+            melds=[MeldInfo(tiles=['1z', '1z', '1z', '1z'], is_open=False)]
+            win_tile='1s'
+""",
     )
     win_tile: str = Field(..., description="和了牌。例: '1m'")
     dora_indicators: Optional[List[str]] = Field(None, description="ドラ表示牌のリスト")

@@ -53,16 +53,17 @@ async def calculate(request: ScoreRequest) -> ScoreResponse:
         )
 
     # 鳴きの形式チェック
-    if request.melds:
-        for meld in request.melds:
-            if not validate_tiles(meld):
-                logger.error(f"Invalid tile format in melds: {meld}")
+    if request.hand.melds:
+        for meld in request.hand.melds:
+            meld_tiles = meld.tiles if hasattr(meld, "tiles") else meld
+            if not validate_tiles(meld_tiles):
+                logger.error(f"Invalid tile format in melds: {meld_tiles}")
                 raise HTTPException(
                     status_code=400, detail="Invalid tile format in melds"
                 )
 
     # 点数計算
-    result = calculate_score(request.hand, request.melds)
+    result = calculate_score(request.hand)
 
     # エラーがある場合は400エラーを返す
     if result.error:

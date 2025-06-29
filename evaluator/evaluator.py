@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
@@ -11,6 +12,7 @@ from generator.generator import (
     generate_question_prompt_template,
 )
 from llmmj.llmmj import calculate_score, validate_meld, validate_tiles
+
 
 logger = logging.getLogger(__name__)
 
@@ -79,16 +81,16 @@ class MahjongEvaluator:
                 expected_fu=data["answer"]["fu"],
             )
         # # 手牌の枚数チェック
-        # if hand.tiles and len(hand.tiles) != 14:
-        #     return EvalResult(
-        #         model=self.model_name,
-        #         correct=False,
-        #         is_error=False,
-        #         reason="Invalid tile count in hand",
-        #         hand=hand,
-        #         expected_han=data["answer"]["han"],
-        #         expected_fu=data["answer"]["fu"],
-        #     )
+        if hand.tiles and len(hand.tiles) < 14:
+            return EvalResult(
+                model=self.model_name,
+                correct=False,
+                is_error=False,
+                reason="Invalid tile count in hand",
+                hand=hand,
+                expected_han=data["answer"]["han"],
+                expected_fu=data["answer"]["fu"],
+            )
         # 和了牌の形式チェック
         if hand.win_tile and hand.win_tile not in hand.tiles:
             return EvalResult(

@@ -1,6 +1,7 @@
 import logging
 import sys
 from pathlib import Path
+from typing import Union
 
 # Add project root to Python path
 project_root = Path(__file__).parent.parent
@@ -8,7 +9,7 @@ sys.path.insert(0, str(project_root))
 
 import mcp
 from apimcp.fast_api import ScoreRequest, ScoreResponse
-from entity.entity import Hand
+from entity.entity import Hand, MeldInfo
 from llmmj.llmmj import calculate_score, validate_tiles
 
 logger = logging.getLogger(__name__)
@@ -16,11 +17,32 @@ logger = logging.getLogger(__name__)
 server = mcp.server.fastmcp.FastMCP("mahjong-calculation-mcp")
 
 
+def convert_melds_input(melds):
+    """Convert melds from various input formats to proper MeldInfo format."""
+    if not melds:
+        return []
+
+    converted = []
+    for meld in melds:
+        if isinstance(meld, dict) and "tiles" in meld:
+            # Dict format with tiles and is_open
+            converted.append(
+                MeldInfo(tiles=meld["tiles"], is_open=meld.get("is_open", True))
+            )
+        elif isinstance(meld, list):
+            # List format (backward compatibility)
+            converted.append(meld)
+        else:
+            # Already MeldInfo or other format
+            converted.append(meld)
+    return converted
+
+
 @server.tool()
 def calculate_mahjong_score(
     tiles: list[str],
     win_tile: str,
-    melds: list[list[str]] = None,
+    melds: list[Union[list[str], dict]] = None,
     dora_indicators: list[str] = None,
     is_riichi: bool = False,
     is_tsumo: bool = False,
@@ -96,7 +118,7 @@ def calculate_mahjong_score(
         hand = Hand(
             tiles=tiles,
             win_tile=win_tile,
-            melds=melds or [],
+            melds=convert_melds_input(melds),
             dora_indicators=dora_indicators or [],
             is_riichi=is_riichi,
             is_tsumo=is_tsumo,
@@ -132,7 +154,7 @@ def calculate_mahjong_score(
 def validate_mahjong_hand(
     tiles: list[str],
     win_tile: str = None,
-    melds: list[list[str]] = None,
+    melds: list[Union[list[str], dict]] = None,
 ) -> dict:
     """麻雀の手牌が有効かどうかを検証します。
 
@@ -190,7 +212,7 @@ def validate_mahjong_hand(
 def check_winning_hand(
     tiles: list[str],
     win_tile: str,
-    melds: list[list[str]] = None,
+    melds: list[Union[list[str], dict]] = None,
 ) -> dict:
     """麻雀の手牌が和了形になっているかどうかをチェックします。
 
@@ -215,7 +237,7 @@ def check_winning_hand(
         result = calculate_mahjong_score(
             tiles=tiles,
             win_tile=win_tile,
-            melds=melds or [],
+            melds=convert_melds_input(melds),
         )
 
         if result.error:
@@ -234,7 +256,7 @@ def check_winning_hand(
 def get_possible_yaku(
     tiles: list[str],
     win_tile: str,
-    melds: list[list[str]] = None,
+    melds: list[Union[list[str], dict]] = None,
     dora_indicators: list[str] = None,
     is_riichi: bool = False,
     is_tsumo: bool = False,
@@ -260,7 +282,7 @@ def get_possible_yaku(
         result = calculate_mahjong_score(
             tiles=tiles,
             win_tile=win_tile,
-            melds=melds or [],
+            melds=convert_melds_input(melds),
             dora_indicators=dora_indicators or [],
             is_riichi=is_riichi,
             is_tsumo=is_tsumo,
