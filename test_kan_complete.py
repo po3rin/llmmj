@@ -71,7 +71,7 @@ def test_meld_conversion():
         MeldInfo(tiles=["1z", "1z", "1z", "1z"], is_open=False),  # Ankan
         MeldInfo(tiles=["5p", "5p", "5p", "5p"], is_open=True),  # Minkan
         MeldInfo(tiles=["2s", "2s", "2s"], is_open=True),  # Open pon
-        ["3m", "4m", "5m"],  # Chi (backward compatibility)
+        MeldInfo(tiles=["3m", "4m", "5m"], is_open=True),  # Chi
     ]
 
     converted = convert_melds_to_mahjong_format(test_melds)
@@ -178,8 +178,8 @@ def test_hand_creation():
     print(f"✓ First meld: {hand.melds[0].tiles}, is_open={hand.melds[0].is_open}")
     print(f"✓ Win tile: {hand.win_tile}")
 
-    # Test backward compatibility
-    legacy_hand = Hand(
+    # Test with dict format
+    dict_hand = Hand(
         tiles=[
             "1m",
             "2m",
@@ -198,13 +198,13 @@ def test_hand_creation():
         ],
         win_tile="1s",
         melds=[
-            ["5p", "5p", "5p"]  # Legacy format
+            MeldInfo(tiles=["5p", "5p", "5p"], is_open=True)  # Pon
         ],
         is_tsumo=True,
     )
 
-    print("✓ Legacy format hand created successfully")
-    print(f"✓ Legacy meld: {legacy_hand.melds[0]}")
+    print("✓ Dict format hand created successfully")
+    print(f"✓ Dict meld: {dict_hand.melds[0]}")
 
     print("✅ Hand creation test passed")
 
@@ -446,7 +446,7 @@ def test_score_calculation_integration():
         win_tile="1s",
         melds=[
             MeldInfo(tiles=["2z", "2z", "2z", "2z"], is_open=False),  # Ankan
-            ["5p", "5p", "5p"],  # Legacy format pon
+            MeldInfo(tiles=["5p", "5p", "5p"], is_open=True),  # Pon
         ],
         is_tsumo=True,
     )
@@ -468,9 +468,9 @@ def test_score_calculation_integration():
     except Exception as e:
         print(f"  ℹ️  Exception: {type(e).__name__}")
 
-    # Test Case 6: Legacy format compatibility
-    print("\nTest Case 6: Legacy format only")
-    hand_legacy = Hand(
+    # Test Case 6: Dict format compatibility
+    print("\nTest Case 6: Dict format only")
+    hand_dict = Hand(
         tiles=[
             "1m",
             "2m",
@@ -489,18 +489,18 @@ def test_score_calculation_integration():
         ],
         win_tile="1s",
         melds=[
-            ["5p", "5p", "5p"]  # Legacy format
+            MeldInfo(tiles=["5p", "5p", "5p"], is_open=True)  # Pon
         ],
         is_tsumo=False,
     )
 
-    converted_melds = convert_melds_to_mahjong_format(hand_legacy.melds)
+    converted_melds = convert_melds_to_mahjong_format(hand_dict.melds)
     print(
-        f"  ✓ Legacy meld: type={converted_melds[0].type}, opened={converted_melds[0].opened}"
+        f"  ✓ Dict meld: type={converted_melds[0].type}, opened={converted_melds[0].opened}"
     )
 
     try:
-        result = calculate_score(hand_legacy)
+        result = calculate_score(hand_dict)
         print(f"  ✓ Result: {result.han}han {result.fu}fu {result.score}points")
         if result.error:
             print(f"  ℹ️  Error: {result.error}")
@@ -515,10 +515,10 @@ def test_mixed_format_compatibility():
     print_section("8. Mixed Format Compatibility Test")
 
     mixed_melds = [
-        MeldInfo(tiles=["1z", "1z", "1z", "1z"], is_open=False),  # New format ankan
-        ["5p", "5p", "5p"],  # Legacy format pon
-        MeldInfo(tiles=["2s", "2s", "2s"], is_open=True),  # New format pon
-        ["3m", "4m", "5m"],  # Legacy format chi
+        MeldInfo(tiles=["1z", "1z", "1z", "1z"], is_open=False),  # Ankan
+        MeldInfo(tiles=["5p", "5p", "5p"], is_open=True),  # Pon
+        MeldInfo(tiles=["2s", "2s", "2s"], is_open=True),  # Pon
+        MeldInfo(tiles=["3m", "4m", "5m"], is_open=True),  # Chi
     ]
 
     converted = convert_melds_to_mahjong_format(mixed_melds)

@@ -1,23 +1,20 @@
-import logging
 import asyncio
 import json
-from typing import Any, Dict, List, Optional
-import uuid
+import logging
 import sys
+import uuid
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pandas as pd
-from google.adk.runners import Runner
-from google.adk.agents import SequentialAgent
 from pydantic import BaseModel, Field
 
+from agents.agents import get_loop_runner, get_sequential_runner, run
 from entity.entity import Hand
 from llmmj.llmmj import calculate_score, validate_hand
-from agents.agents import run, get_sequential_runner
-
 
 logger = logging.getLogger(__name__)
 
@@ -35,26 +32,38 @@ class EvalResult(BaseModel):
 
 
 class MahjongEvaluatorSequential:
-    def __init__(self, app_name: str = "mahjong_evaluator", runner: Optional[Runner] = None):
-        self.app_name = app_name
-        self.model_name = "sequential_agent"
-        self.runner = runner
+    def __init__(self, runner_type: str = "sequential"):
+        self.runner_type = runner_type
+        self.app_name = "mahjong_evaluator"
+        self.model_name = f"gemini-{runner_type}"
 
-    async def _generate_hand_from_query(self, query: str) -> Hand:
+    async def _generate_hand_from_query(
+        self,
+        query: str,
+        app_name: str,
+        user_id: str,
+        session_id: str,
+        data: Dict[str, Any],
+    ) -> Hand:
         """Use sequential_run to generate a mahjong hand from a query."""
-        user_id = str(uuid.uuid4())
-        session_id = str(uuid.uuid4())
-        
         try:
-            runner = await get_sequential_runner(self.app_name, user_id, session_id)
-            
+            if self.runner_type == "sequential":
+                runner = await get_sequential_runner(app_name, user_id, session_id)
+            elif self.runner_type == "loop":
+                runner = await get_loop_runner(
+                    app_name,
+                    user_id,
+                    session_id,
+                    expected_han=data["answer"]["han"],
+                    expected_fu=data["answer"]["fu"],
+                )
+            else:
+                raise ValueError(f"Unknown runner_type: {self.runner_type}")
+
             result = await run(
-                runner=runner,
-                user_id=user_id,
-                session_id=session_id,
-                query=query
+                runner=runner, user_id=user_id, session_id=session_id, query=query
             )
-            
+
             # Parse the JSON result
             hand_data = json.loads(result)
             return Hand(**hand_data)
@@ -62,7 +71,7 @@ class MahjongEvaluatorSequential:
             logger.error(f"Failed to parse JSON result: {e}, raw result: {result}")
             raise
         except Exception as e:
-            logger.error(f"Error in sequential_run: {e}")
+            logger.error(f"Error in _generate_hand_from_query: {e}")
             raise
 
     def _pipe(self, hand: Hand, data: Dict[str, Any]) -> EvalResult:
@@ -126,10 +135,14 @@ class MahjongEvaluatorSequential:
     async def evals_async(self, dataset: List[Dict[str, Any]]) -> pd.DataFrame:
         """Asynchronous evaluation of dataset."""
         eval_results: List[EvalResult] = []
-        
+
         for d in dataset:
+            user_id = str(uuid.uuid4())
+            session_id = str(uuid.uuid4())
             try:
-                hand = await self._generate_hand_from_query(d["query"])
+                hand = await self._generate_hand_from_query(
+                    d["query"], self.app_name, user_id, session_id, d
+                )
             except Exception as e:
                 logger.error(f"Error generating question: {e}")
                 # Create an error result instead of raising the exception
@@ -158,7 +171,7 @@ class MahjongEvaluatorSequential:
             # If we're already in an event loop, we need to handle it differently
             import concurrent.futures
             import threading
-            
+
             # Create a new thread to run the async function
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(asyncio.run, self.evals_async(dataset))

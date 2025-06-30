@@ -1,6 +1,6 @@
-import logging
 import json
-from typing import List, Union
+import logging
+from typing import Any, List, Union
 
 from mahjong.hand_calculating.hand import HandCalculator
 from mahjong.hand_calculating.hand_config import HandConfig
@@ -46,13 +46,13 @@ def convert_tiles_to_136_array(tiles: List[str]) -> List[int]:
 
 
 def convert_melds_to_mahjong_format(
-    melds: List[Union[List[str], MeldInfo]],
+    melds: List[MeldInfo],
 ) -> List[Meld]:
     """
     鳴きの情報をMahjongライブラリの形式に変換する
 
     Args:
-        melds: 鳴きの情報のリスト
+        melds: MeldInfo形式の鳴きの情報のリスト
 
     Returns:
         List[Meld]: Mahjongライブラリの形式の鳴き情報
@@ -60,19 +60,16 @@ def convert_melds_to_mahjong_format(
     logger.debug(f"Converting melds to mahjong format: {melds}")
     result = []
     for meld in melds:
-        # MeldInfo型の場合
-        if isinstance(meld, MeldInfo):
-            tiles = convert_tiles_to_136_array(meld.tiles)
-            meld_type = _detect_meld_type(meld.tiles)
-            # カンの場合はis_openを使用、それ以外は常にTrue
-            is_open = meld.is_open if meld_type == Meld.KAN else True
-            result.append(Meld(meld_type=meld_type, tiles=tiles, opened=is_open))
-        # 後方互換性のためList[str]型もサポート
-        else:
-            tiles = convert_tiles_to_136_array(meld)
-            meld_type = _detect_meld_type(meld)
-            # List[str]形式の場合は常に明刻として扱う
-            result.append(Meld(meld_type=meld_type, tiles=tiles, opened=True))
+        if not isinstance(meld, MeldInfo):
+            raise ValueError(
+                f"メルドはMeldInfo型である必要があります。受け取った型: {type(meld)}"
+            )
+
+        tiles = convert_tiles_to_136_array(meld.tiles)
+        meld_type = _detect_meld_type(meld.tiles)
+        # カンの場合はis_openを使用、それ以外は常にTrue
+        is_open = meld.is_open if meld_type == Meld.KAN else True
+        result.append(Meld(meld_type=meld_type, tiles=tiles, opened=is_open))
     logger.debug(f"Converted melds: {result}")
     return result
 
@@ -209,13 +206,13 @@ def validate_tiles(tiles: List[str]) -> bool:
         return False
 
 
-def validate_meld(tiles: List[str], melds: List[Union[List[str], MeldInfo]]) -> bool:
+def validate_meld(tiles: List[str], melds: List[MeldInfo]) -> bool:
     """
     鳴きの形式が正しいかチェックする
 
     Args:
         tiles: 手牌のリスト
-        melds: 鳴きのリストのリスト
+        melds: MeldInfo形式の鳴きのリスト
 
     Returns:
         bool: 正しい形式かどうか
@@ -224,50 +221,51 @@ def validate_meld(tiles: List[str], melds: List[Union[List[str], MeldInfo]]) -> 
         logger.debug(f"Validating melds: {melds}")
         # 各鳴きを検証
         for meld in melds:
-            if isinstance(meld, MeldInfo):
-                convert_tiles_to_136_array(meld.tiles)
-                meld_tiles = meld.tiles
-            else:
-                convert_tiles_to_136_array(meld)
-                meld_tiles = meld
+            if not isinstance(meld, MeldInfo):
+                logger.error(
+                    f"メルドはMeldInfo型である必要があります。受け取った型: {type(meld)}"
+                )
+                return False
+            convert_tiles_to_136_array(meld.tiles)
     except Exception as e:
         logger.error(f"Invalid meld format: {str(e)}")
         return False
 
     # meldsに存在する牌は全てtilesに含まれているべき
     for meld in melds:
-        meld_tiles = meld.tiles if isinstance(meld, MeldInfo) else meld
-        for tile in meld_tiles:
+        for tile in meld.tiles:
             if tile not in tiles:
-                logger.error(f"Invalid meld in hand: {meld_tiles}")
+                logger.error(f"Invalid meld in hand: {meld.tiles}")
                 return False
     return True
 
 
 def validate_hand(hand: Hand):
     # Handle error cases where hand has empty tiles
-        if not hand.tiles:
-            raise ValueError("Invalid tile format in tiles. tiles is required")
+    if not hand.tiles:
+        raise ValueError("Invalid tile format in tiles. tiles is required")
 
-        # 手牌の形式チェック
-        if not validate_tiles(hand.tiles):
-            raise ValueError("Invalid tile format in tiles. tiles is not valid")
+    # 手牌の形式チェック
+    if not validate_tiles(hand.tiles):
+        raise ValueError("Invalid tile format in tiles. tiles is not valid")
 
-        # ドラ表示牌の形式チェック
-        if hand.dora_indicators and not validate_tiles(hand.dora_indicators):
-            raise ValueError("Invalid tile format in dora indicators. dora_indicators is not valid")
+    # ドラ表示牌の形式チェック
+    if hand.dora_indicators and not validate_tiles(hand.dora_indicators):
+        raise ValueError(
+            "Invalid tile format in dora indicators. dora_indicators is not valid"
+        )
 
-        # 鳴きの形式チェック
-        if hand.melds and not validate_meld(hand.tiles, hand.melds):
-            raise ValueError("Invalid meld in hand. melds is not valid")
+    # 鳴きの形式チェック
+    if hand.melds and not validate_meld(hand.tiles, hand.melds):
+        raise ValueError("Invalid meld in hand. melds is not valid")
 
-        # 手牌の枚数チェック
-        if hand.tiles and len(hand.tiles) < 14:
-            raise ValueError("Invalid tile count in hand. tiles is less than 14")
+    # 手牌の枚数チェック
+    if hand.tiles and len(hand.tiles) < 14:
+        raise ValueError("Invalid tile count in hand. tiles is less than 14")
 
-        # 和了牌の形式チェック
-        if hand.win_tile and hand.win_tile not in hand.tiles:
-            raise ValueError("Invalid win tile in hand. win_tile is not in tiles")
+    # 和了牌の形式チェック
+    if hand.win_tile and hand.win_tile not in hand.tiles:
+        raise ValueError("Invalid win tile in hand. win_tile is not in tiles")
 
 
 def calculate_score_with_json(json_str: str) -> ScoreResponse:

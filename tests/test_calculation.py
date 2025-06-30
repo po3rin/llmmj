@@ -92,7 +92,7 @@ class TestCalculateMahjongScore:
                 "5p",
             ],
             win_tile="1s",
-            melds=[["5p", "5p", "5p"]],
+            melds=[{"tiles": ["5p", "5p", "5p"], "is_open": True}],
             dora_indicators=["2s"],
             is_riichi=False,
             is_tsumo=False,
@@ -123,7 +123,7 @@ class TestCalculateMahjongScore:
                 "1s",
             ],
             win_tile="1s",
-            melds=[MeldInfo(tiles=["1z", "1z", "1z", "1z"], is_open=False)],
+            melds=[{"tiles": ["1z", "1z", "1z", "1z"], "is_open": False}],
             dora_indicators=["2z"],
             is_riichi=False,
             is_tsumo=True,
@@ -210,7 +210,7 @@ class TestCheckHandValidity:
                 "5p",
                 "5p",
             ],
-            melds=[["5p", "5p", "5p"]],
+            melds=[{"tiles": ["5p", "5p", "5p"], "is_open": True}],
         )
 
         assert result["status"] == "success"
@@ -234,7 +234,7 @@ class TestCheckHandValidity:
                 "1z",
                 "1s",
             ],
-            melds=[MeldInfo(tiles=["1z", "1z", "1z", "1z"], is_open=False)],
+            melds=[{"tiles": ["1z", "1z", "1z", "1z"], "is_open": False}],
         )
 
         assert result["status"] == "success"
@@ -264,7 +264,7 @@ class TestCheckHandValidity:
                 "2s",
                 "2s",
             ],
-            melds=[["5p", "5p", "5p"]],
+            melds=[{"tiles": ["5p", "5p", "5p"], "is_open": True}],
         )
 
         assert result["status"] == "error"

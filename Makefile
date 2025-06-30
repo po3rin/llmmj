@@ -1,4 +1,4 @@
-.PHONY: help format lint check install clean
+.PHONY: help format lint check install clean test
 
 # Default target
 help:
@@ -6,6 +6,7 @@ help:
 	@echo "  format  - Format code with isort and ruff"
 	@echo "  lint    - Lint code with ruff"
 	@echo "  check   - Check code formatting and linting"
+	@echo "  test    - Run tests with pytest"
 	@echo "  install - Install dependencies"
 	@echo "  clean   - Clean cache and temporary files"
 
@@ -34,6 +35,12 @@ check:
 # Install dependencies
 install:
 	uv sync --all-groups
+
+# Run tests
+test:
+	@echo "Running tests with pytest..."
+	uv run pytest tests/ -v
+	@echo "Tests completed!"
 
 # Clean cache and temporary files
 clean:

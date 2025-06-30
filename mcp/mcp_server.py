@@ -1,7 +1,6 @@
 import logging
 import sys
 from pathlib import Path
-from typing import Union
 
 # Add project root to Python path
 project_root = Path(__file__).parent.parent
@@ -18,23 +17,20 @@ server = mcp.server.fastmcp.FastMCP("mahjong-calculation-mcp")
 
 
 def convert_melds_input(melds):
-    """Convert melds from various input formats to proper MeldInfo format."""
+    """Convert melds from dict format to MeldInfo format."""
     if not melds:
         return []
 
     converted = []
     for meld in melds:
-        if isinstance(meld, dict) and "tiles" in meld:
-            # Dict format with tiles and is_open
-            converted.append(
-                MeldInfo(tiles=meld["tiles"], is_open=meld.get("is_open", True))
+        if not isinstance(meld, dict) or "tiles" not in meld:
+            raise ValueError(
+                "melds must be in MeldInfo format: {'tiles': [...], 'is_open': bool}"
             )
-        elif isinstance(meld, list):
-            # List format (backward compatibility)
-            converted.append(meld)
-        else:
-            # Already MeldInfo or other format
-            converted.append(meld)
+        # Dict format with tiles and is_open
+        converted.append(
+            MeldInfo(tiles=meld["tiles"], is_open=meld.get("is_open", True))
+        )
     return converted
 
 
@@ -42,7 +38,7 @@ def convert_melds_input(melds):
 def calculate_mahjong_score(
     tiles: list[str],
     win_tile: str,
-    melds: list[Union[list[str], dict]] = None,
+    melds: list[dict] = None,
     dora_indicators: list[str] = None,
     is_riichi: bool = False,
     is_tsumo: bool = False,
@@ -68,7 +64,7 @@ def calculate_mahjong_score(
     Args:
         tiles: 136形式の配列であり和了時の手牌です。14枚になります。例: ["1m", "2m", "3m", "4m", "4m", "5p", "5p", "5p", "7p", "8p", "9p", "1z", "1z", "1z"]
         win_tile: 和了牌です。例: "1m"
-        melds: 鳴きの情報を格納する配列です。例: [["1m", "2m", "3m"], ["4s", "4s", "4s"]]
+        melds: 鳴きの情報を格納する配列です。MeldInfo形式のみ: [{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}]
         dora_indicators: ドラ表示牌のリストです。例: ["2m"]
         is_riichi: リーチ宣言済みかどうか
         is_tsumo: 自摸和了かどうか
@@ -109,8 +105,15 @@ def calculate_mahjong_score(
     # 鳴きの形式チェック
     if melds:
         for meld in melds:
-            if not validate_tiles(meld):
-                logger.error(f"Invalid tile format in melds: {meld}")
+            if not isinstance(meld, dict) or "tiles" not in meld:
+                logger.error(
+                    f"Invalid meld format: {meld}. Must be MeldInfo format: {{'tiles': [...], 'is_open': bool}}"
+                )
+                raise Exception(
+                    detail="Invalid meld format. Must be MeldInfo format: {'tiles': [...], 'is_open': bool}"
+                )
+            if not validate_tiles(meld["tiles"]):
+                logger.error(f"Invalid tile format in melds: {meld['tiles']}")
                 raise Exception(detail="Invalid tile format in melds")
 
     try:
@@ -154,14 +157,14 @@ def calculate_mahjong_score(
 def validate_mahjong_hand(
     tiles: list[str],
     win_tile: str = None,
-    melds: list[Union[list[str], dict]] = None,
+    melds: list[dict] = None,
 ) -> dict:
     """麻雀の手牌が有効かどうかを検証します。
 
     Args:
         tiles: 136形式の配列であり和了時の手牌です。例: ["1m", "2m", "3m", "4m", "4m", "5p", "5p", "5p", "7p", "8p", "9p", "1z", "1z", "1z"]
         win_tile: 和了牌です。例: "1m"
-        melds: 鳴きの情報を格納する配列です。例: [["1m", "2m", "3m"], ["4s", "4s", "4s"]]
+        melds: 鳴きの情報を格納する配列です。MeldInfo形式のみ: [{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}]
 
     Returns:
         dict: 検証結果 {"valid": bool, "errors": list[str], "warnings": list[str]}
@@ -188,13 +191,22 @@ def validate_mahjong_hand(
     # 鳴きの形式チェック
     if melds:
         for i, meld in enumerate(melds):
-            if not validate_tiles(meld):
+            if not isinstance(meld, dict) or "tiles" not in meld:
+                errors.append(
+                    f"Invalid meld format {i}. Must be MeldInfo format: {{'tiles': [...], 'is_open': bool}}"
+                )
+                continue
+
+            meld_tiles = meld["tiles"]
+            if not validate_tiles(meld_tiles):
                 errors.append(f"Invalid tile format in meld {i}")
-            elif len(meld) not in [3, 4]:
-                errors.append(f"Meld {i} should have 3 or 4 tiles, but has {len(meld)}")
+            elif len(meld_tiles) not in [3, 4]:
+                errors.append(
+                    f"Meld {i} should have 3 or 4 tiles, but has {len(meld_tiles)}"
+                )
 
             # 鳴きの牌が手牌に含まれているかチェック
-            for tile in meld:
+            for tile in meld_tiles:
                 if tile not in tiles:
                     errors.append(f"Meld tile {tile} is not in the hand")
 
@@ -212,14 +224,14 @@ def validate_mahjong_hand(
 def check_winning_hand(
     tiles: list[str],
     win_tile: str,
-    melds: list[Union[list[str], dict]] = None,
+    melds: list[dict] = None,
 ) -> dict:
     """麻雀の手牌が和了形になっているかどうかをチェックします。
 
     Args:
         tiles: 136形式の配列であり和了時の手牌です。例: ["1m", "2m", "3m", "4m", "4m", "5p", "5p", "5p", "7p", "8p", "9p", "1z", "1z", "1z"]
         win_tile: 和了牌です。例: "1m"
-        melds: 鳴きの情報を格納する配列です。例: [["1m", "2m", "3m"], ["4s", "4s", "4s"]]
+        melds: 鳴きの情報を格納する配列です。MeldInfo形式のみ: [{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}]
 
     Returns:
         dict: 和了形チェック結果 {"is_winning": bool, "reason": str}
@@ -256,7 +268,7 @@ def check_winning_hand(
 def get_possible_yaku(
     tiles: list[str],
     win_tile: str,
-    melds: list[Union[list[str], dict]] = None,
+    melds: list[dict] = None,
     dora_indicators: list[str] = None,
     is_riichi: bool = False,
     is_tsumo: bool = False,

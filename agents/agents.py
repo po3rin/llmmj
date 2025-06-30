@@ -1,27 +1,21 @@
 import asyncio
+import logging
 import os
+from datetime import datetime
+from typing import AsyncGenerator
 
-from pydantic import BaseModel, Field
-
-from google.adk.agents import Agent
+from google.adk.agents import Agent, BaseAgent, LoopAgent, SequentialAgent
+from google.adk.agents.invocation_context import InvocationContext
+from google.adk.events import Event, EventActions
 from google.adk.models.lite_llm import LiteLlm  # For multi-model support
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
-from google.adk.agents import SequentialAgent, LoopAgent
 from google.genai import types  # For creating message Content/Parts
-from google.adk.agents import BaseAgent
-from google.adk.agents.invocation_context import InvocationContext
-from google.adk.events import Event, EventActions
-from typing import AsyncGenerator
-
+from pydantic import BaseModel, Field
 
 from llmmj.llmmj import calculate_score_with_json
-
-from tools.calculation import (
-    calculate_mahjong_score,
-    check_hand_validity,
-    final_output_message_check,
-)
+from tools.calculation import calculate_mahjong_score  # check_hand_validity,
+from tools.calculation import final_output_message_check
 
 MODEL = "gemini-2.5-flash"
 
@@ -112,9 +106,7 @@ def get_mahjong_score_question_checker_agent() -> Agent:
         ## Tools
         - calculate_mahjong_score: Calculate the mahjong score.
         """,
-        tools=[
-            calculate_mahjong_score
-        ],
+        tools=[calculate_mahjong_score],
         output_key="mahjong_score_calculation_problem_check_result",
     )
     print(f"✅ Agent '{mahjong_score_question_checker_agent.name}' redefined.")
@@ -183,9 +175,9 @@ def get_final_output_json_generator_agent() -> Agent:
                 "round_wind": str
             }
         - tiles: list[str]: Array in 136 format representing the winning hand. Important: Must include all tiles in the hand, including those specified in melds. Example: For a hand with 10 tiles + 4 ankan tiles + 1 winning tile, specify all 15 tiles like tiles=['1m', '2m', '3m', '4m', '4m', '5p', '5p', '5p', '7p', '8p', '1z', '1z', '1z', '1z', '1s'].
-        - MeldInfo format: MeldInfo(tiles=['1z', '1z', '1z', '1z'], is_open=False)
+        - melds: list[MeldInfo]: Meld information. MeldInfo format only: [{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}]
             - tiles: Meld tiles (136 format). These tiles must also be included in the tiles field.
-            - is_open: True=open meld (minkan, pon, chi), False=closed meld (ankan)
+            - is_open: true=open meld (minkan, pon, chi), false=closed meld (ankan)
         - win_tile (str): The winning tile
         - dora_indicators (list[str]): Dora indicator tiles
         - is_riichi (bool): Whether riichi is declared. Cannot declare riichi after calling melds, so must be False if melds is not None.
@@ -203,26 +195,49 @@ def get_final_output_json_generator_agent() -> Agent:
 class CheckStatusAndEscalate(BaseAgent):
     expected_han: int = Field(..., description="Expected han")
     expected_fu: int = Field(..., description="Expected fu")
-    
-    async def _run_async_impl(self, ctx: InvocationContext) -> AsyncGenerator[Event, None]:
+
+    async def _run_async_impl(
+        self, ctx: InvocationContext
+    ) -> AsyncGenerator[Event, None]:
+        print(f"🔍 CheckStatusAndEscalate: {self.expected_han}, {self.expected_fu}")
         status = "fail"
-        output = ctx.session.state.get("last_final_output_message", "fail")
+        output = ctx.session.state.get("last_final_output_message", None)
+        if output is None:
+            print("No final output message found in session state")
+            raise Exception("No final output message found in session state")
+
         score_response = calculate_score_with_json(output)
-        
-        if score_response.han == self.expected_han and score_response.fu == self.expected_fu:
+
+        if (
+            score_response.han == self.expected_han
+            and score_response.fu == self.expected_fu
+        ):
+            print(
+                f"✅ CheckStatusAndEscalate: got: {score_response.han}, {score_response.fu} == want: {self.expected_han}, {self.expected_fu}"
+            )
             status = "pass"
         else:
+            print(
+                f"❌ CheckStatusAndEscalate: got: {score_response.han}, {score_response.fu} != want: {self.expected_han}, {self.expected_fu}"
+            )
             status = "fail"
 
         ctx.session.state["current_score"] = score_response
-        
-        should_stop = (status == "pass")
+
+        should_stop = status == "pass"
         yield Event(author=self.name, actions=EventActions(escalate=should_stop))
 
 
 async def call_agent_async(query: str, runner, user_id, session_id) -> str:
     """Sends a query to the agent and prints the final response."""
-    print(f"\n>>> User Query: {query}")
+    agent_logger = logging.getLogger("agent_interactions")
+    # Log session start info
+    agent_logger.info(
+        f"SESSION[{session_id}] ========== NEW INTERACTION START =========="
+    )
+
+    query_msg = f">>> User Query: {query}"
+    agent_logger.info(f"SESSION[{session_id}] USER[{user_id}] {query_msg}")
 
     # Prepare the user's message in ADK format
     content = types.Content(role="user", parts=[types.Part(text=query)])
@@ -234,30 +249,45 @@ async def call_agent_async(query: str, runner, user_id, session_id) -> str:
     async for event in runner.run_async(
         user_id=user_id, session_id=session_id, new_message=content
     ):
-        # Show all events during execution including thinking process and sub-agent conversations
-        if event.content and event.content.parts:
-            parts_text = "\n".join([part.text for part in event.content.parts if hasattr(part, 'text') and part.text])
-            if parts_text:
-                print(f"\n[{event.author}]: {parts_text}")
-        
-        # Also show tool calls if any
-        if hasattr(event, 'actions') and event.actions and hasattr(event.actions, 'tool_calls'):
-            for tool_call in event.actions.tool_calls:
-                print(f"\n[{event.author}] Tool Call: {tool_call.name}")
-                if hasattr(tool_call, 'parameters'):
-                    print(f"  Parameters: {tool_call.parameters}")
+        # # Show all events during execution including thinking process and sub-agent conversations
+        # if event.content and event.content.parts:
+        #     parts_text = "\n".join([part.text for part in event.content.parts if hasattr(part, 'text') and part.text])
+        #     if parts_text:
+        #         event_msg = f"[{event.author}]: {parts_text}"
+        #         # print(f"\n{event_msg}")
+        #         agent_logger.info(f"SESSION[{session_id}] {event_msg}")
+
+        # # Also show tool calls if any
+        # if hasattr(event, 'actions') and event.actions and hasattr(event.actions, 'tool_calls'):
+        #     for tool_call in event.actions.tool_calls:
+        #         tool_msg = f"[{event.author}] Tool Call: {tool_call.name}"
+        #         # print(f"\n{tool_msg}")
+        #         agent_logger.info(f"SESSION[{session_id}] {tool_msg}")
+        #         if hasattr(tool_call, 'parameters'):
+        #             param_msg = f"  Parameters: {tool_call.parameters}"
+        #             # print(param_msg)
+        #             agent_logger.info(f"SESSION[{session_id}] {param_msg}")
 
         # Key Concept: is_final_response() marks the concluding message for the turn.
         if event.is_final_response():
             if event.content and event.content.parts:
                 # Assuming text response in the first part
                 final_response_text = event.content.parts[0].text
+                final_msg = f">>> Final Response: {final_response_text}"
+                agent_logger.info(f"SESSION[{session_id}] Final Response:\n{final_msg}")
             elif (
                 event.actions and event.actions.escalate
             ):  # Handle potential errors/escalations
                 final_response_text = (
                     f"Agent escalated: {event.error_message or 'No specific message.'}"
                 )
+                escalate_msg = f">>> Agent Escalated: {final_response_text}"
+                agent_logger.info(
+                    f"SESSION[{session_id}] Final Response:\n{escalate_msg}"
+                )
+
+    # Log session end info
+    agent_logger.info(f"SESSION[{session_id}] ========== INTERACTION END ==========")
 
     return final_response_text
 
@@ -265,56 +295,48 @@ async def call_agent_async(query: str, runner, user_id, session_id) -> str:
 async def get_sequential_runner(app_name: str, user_id: str, session_id: str) -> Runner:
     # Create runner for each query to avoid session conflicts
     session_service = await create_session(
-        app_name=app_name,
-        user_id=user_id,
-        session_id=session_id
+        app_name=app_name, user_id=user_id, session_id=session_id
     )
-    
+
     supervisor_agent = get_mahjong_supervisor_agent()
     final_output_json_generator_agent = get_final_output_json_generator_agent()
-    
+
     root_agent = SequentialAgent(
         name="mahjong_sequential_agent",
-        sub_agents=[
-            supervisor_agent,
-            final_output_json_generator_agent
-        ]
-    )
-    
-    return Runner(
-        agent=root_agent,
-        app_name=app_name,
-        session_service=session_service
+        sub_agents=[supervisor_agent, final_output_json_generator_agent],
     )
 
+    return Runner(agent=root_agent, app_name=app_name, session_service=session_service)
 
-async def get_loop_runner(app_name: str, user_id: str, session_id: str, expected_han: int, expected_fu: int) -> Runner:
+
+async def get_loop_runner(
+    app_name: str, user_id: str, session_id: str, expected_han: int, expected_fu: int
+) -> Runner:
     session_service = await create_session(
-        app_name=app_name,
-        user_id=user_id,
-        session_id=session_id
+        app_name=app_name, user_id=user_id, session_id=session_id
     )
-    
+
     supervisor_agent = get_mahjong_supervisor_agent()
     final_output_json_generator_agent = get_final_output_json_generator_agent()
-    
+
+    sequential_agent = SequentialAgent(
+        name="mahjong_sequential_agent",
+        sub_agents=[supervisor_agent, final_output_json_generator_agent],
+    )
+
     root_agent = LoopAgent(
-        agent=root_agent,
+        name="mahjong_loop_agent",
         max_iterations=5,
         sub_agents=[
-            supervisor_agent,
-            final_output_json_generator_agent,
+            sequential_agent,
             CheckStatusAndEscalate(
                 name="StopChecker", expected_han=expected_han, expected_fu=expected_fu
-            )
-        ]
+            ),
+        ],
     )
-    
-    return Runner(
-        agent=root_agent,
-        app_name=app_name,
-        session_service=session_service
-    )
+
+    return Runner(agent=root_agent, app_name=app_name, session_service=session_service)
+
 
 async def run(runner: Runner, user_id: str, session_id: str, query: str) -> str:
     return await call_agent_async(

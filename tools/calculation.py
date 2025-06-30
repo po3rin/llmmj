@@ -1,6 +1,6 @@
 import json
-from typing import List, Optional, Union
 import logging
+from typing import Any, Dict, List, Optional
 
 from mahjong.hand_calculating.hand import HandCalculator
 from mahjong.hand_calculating.hand_config import HandConfig
@@ -14,14 +14,13 @@ from llmmj.llmmj import (
     validate_tiles,
 )
 
-
 logging.basicConfig(level=logging.INFO)
 
 
 def calculate_mahjong_score(
     tiles: List[str],
     win_tile: str,
-    melds: Optional[List[str]],
+    melds: Optional[List[Dict[str, Any]]],
     dora_indicators: Optional[List[str]],
     is_riichi: bool,
     is_tsumo: bool,
@@ -53,14 +52,29 @@ def calculate_mahjong_score(
         dict: Score calculation result
     """
     logging.info("hello calculate_mahjong_score!!!")
-    
+
     check_hand_validity_result = check_hand_validity(tiles, melds)
     if check_hand_validity_result["status"] == "error":
         return check_hand_validity_result
 
     # 鳴きの情報を変換
     try:
-        mahjong_melds = convert_melds_to_mahjong_format(melds) if melds else []
+        # Convert dict melds to MeldInfo objects
+        if melds:
+            converted_melds = []
+            for meld in melds:
+                if not isinstance(meld, dict) or "tiles" not in meld:
+                    return {
+                        "status": "error",
+                        "error": "melds must be in MeldInfo format: {'tiles': [...], 'is_open': bool}",
+                    }
+                # Convert dict to MeldInfo
+                converted_melds.append(
+                    MeldInfo(tiles=meld["tiles"], is_open=meld.get("is_open", True))
+                )
+            mahjong_melds = convert_melds_to_mahjong_format(converted_melds)
+        else:
+            mahjong_melds = []
     except Exception as e:
         return {"status": "error", "error": f"Invalid melds: {e!s}"}
 
@@ -118,16 +132,14 @@ def calculate_mahjong_score(
 
 def check_hand_validity(
     tiles: List[str],
-    melds: Optional[List[str]],
+    melds: Optional[List[Dict[str, Any]]],
 ) -> dict:
     """Check if the hand & melds is valid.
 
     Args:
         tiles (str): Array in 136 format representing the winning hand. Important: Must include all tiles in the hand, including those specified in melds. Example: For a hand with 10 tiles + 4 ankan tiles + 1 winning tile, specify all 15 tiles like tiles=['1m', '2m', '3m', '4m', '4m', '5p', '5p', '5p', '7p', '8p', '1z', '1z', '1z', '1z', '1s'].
 
-        melds (list[str]): Meld information. Supports two formats:
-            1. List[str] format (backward compatibility): ['5p', '5p', '5p'] - always treated as open meld
-            2. MeldInfo format: MeldInfo(tiles=['1z', '1z', '1z', '1z'], is_open=False)
+        melds list[MeldInfo] format: {'tiles': [...], 'is_open': bool}
                 - tiles: Meld tiles (136 format). These tiles must also be included in the tiles field.
                 - is_open: True=open meld (minkan, pon, chi), False=closed meld (ankan)
 
@@ -136,8 +148,21 @@ def check_hand_validity(
     """
     logging.info("hello check_hand_validity!!!")
 
-    if melds and not validate_meld(tiles, melds):
-        return {"status": "error", "error": "Invalid meld"}
+    if melds:
+        # Convert dict melds to MeldInfo for validation
+        converted_melds = []
+        for meld in melds:
+            if not isinstance(meld, dict) or "tiles" not in meld:
+                return {
+                    "status": "error",
+                    "error": "melds must be in MeldInfo format: {'tiles': [...], 'is_open': bool}",
+                }
+            converted_melds.append(
+                MeldInfo(tiles=meld["tiles"], is_open=meld.get("is_open", True))
+            )
+
+        if not validate_meld(tiles, converted_melds):
+            return {"status": "error", "error": "Invalid meld"}
 
     if not validate_tiles(tiles):
         return {"status": "error", "error": "Invalid tiles"}

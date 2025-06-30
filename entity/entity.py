@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -22,13 +22,12 @@ class Hand(BaseModel):
         例: 手牌10枚+暗槓4枚+和了牌1枚の場合、tiles=['1m', '2m', '3m', '4m', '4m', '5p', '5p', '5p', '7p', '8p', '1z', '1z', '1z', '1z', '1s']のように15枚全てを指定。
 """,
     )
-    melds: Optional[List[Union[List[str], MeldInfo]]] = Field(
+    melds: Optional[List[MeldInfo]] = Field(
         None,
-        description="""鳴きの情報。以下の2つの形式をサポート:
-        1. List[str]形式（後方互換性）: ['5p', '5p', '5p'] - 常に明刻として扱われる
-        2. MeldInfo形式: MeldInfo(tiles=['1z', '1z', '1z', '1z'], is_open=False)
-           - tiles: 鳴きの牌（136形式）。この牌はtilesフィールドにも含まれている必要があります。
-           - is_open: True=明刻（ミンカン、ポン、チー）、False=暗刻（アンカン）
+        description="""鳴きの情報。MeldInfo形式のみサポート:
+        MeldInfo(tiles=['1z', '1z', '1z', '1z'], is_open=False)
+        - tiles: 鳴きの牌（136形式）。この牌はtilesフィールドにも含まれている必要があります。
+        - is_open: True=明刻（ミンカン、ポン、チー）、False=暗刻（アンカン）
         
         重要: meldsで指定した牌は、tilesフィールドにも重複して含める必要があります。
         例: 暗槓の場合

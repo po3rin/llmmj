@@ -1,5 +1,5 @@
-import logging
 import asyncio
+import logging
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
@@ -12,7 +12,6 @@ from generator.generator import (
     generate_question_prompt_template,
 )
 from llmmj.llmmj import calculate_score, validate_meld, validate_tiles
-
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 from langchain.agents import AgentExecutor, create_react_agent
 from langchain.hub import pull

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
@@ -34,9 +34,9 @@ class MahjongScoreInput(BaseModel):
         description="List of hand tiles. Important: Must include all tiles in the hand, including those specified in melds. Example: For a hand with 10 tiles + 4 ankan tiles + 1 winning tile, specify all 15 tiles."
     )
     win_tile: str = Field(description="The winning tile")
-    melds: Optional[List[Union[List[str], Dict[str, Any]]]] = Field(
+    melds: Optional[List[Dict[str, Any]]] = Field(
         default=[],
-        description="Meld information. List[str] format or Dict format ({'tiles': [...], 'is_open': bool}). Important: Tiles specified in melds must also be included in the tiles field.",
+        description="Meld information. MeldInfo format only: {'tiles': [...], 'is_open': bool}. tiles: List of tiles in the meld (136 format). is_open: true=open meld (minkan, pon, chi), false=closed meld (ankan). Important: Tiles specified in melds must also be included in the tiles field.",
     )
     dora_indicators: Optional[List[str]] = Field(
         default=[], description="Dora indicator tiles"
@@ -92,9 +92,9 @@ class MahjongValidationInput(BaseModel):
 
     tiles: List[str] = Field(description="手牌の牌リスト")
     win_tile: Optional[str] = Field(default=None, description="和了牌")
-    melds: Optional[List[Union[List[str], Dict[str, Any]]]] = Field(
+    melds: Optional[List[Dict[str, Any]]] = Field(
         default=[],
-        description="鳴きの情報。List[str]形式またはDict形式（{'tiles': [...], 'is_open': bool}）。重要: meldsで指定した牌は、tilesフィールドにも重複して含める必要があります。",
+        description="鳴きの情報。MeldInfo形式のみ: {'tiles': [...], 'is_open': bool}。tiles: 鳴きの牌（136形式）。is_open: true=明刻（ミンカン、ポン、チー）、false=暗刻（アンカン）。重要: meldsで指定した牌は、tilesフィールドにも重複して含める必要があります。",
     )
 
 
