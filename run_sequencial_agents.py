@@ -3,7 +3,7 @@ import asyncio
 from google.adk.agents import SequentialAgent
 from google.adk.runners import Runner
 
-from agents.agents import (
+from agents.agent import (
     create_session,
     get_final_output_json_generator_agent,
     get_mahjong_supervisor_agent,

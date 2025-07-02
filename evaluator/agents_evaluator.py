@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import pandas as pd
 from pydantic import BaseModel, Field
 
-from agents.agents import get_loop_runner, get_sequential_runner, run
+from agents import get_loop_runner, get_sequential_runner, run
 from entity.entity import Hand
 from llmmj.llmmj import calculate_score, validate_hand
 
