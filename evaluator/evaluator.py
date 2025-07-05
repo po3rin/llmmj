@@ -1,30 +1,18 @@
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import pandas as pd
 from langchain_core.language_models.chat_models import BaseChatModel
-from pydantic import BaseModel, Field
 
 from entity.entity import Hand
+from evaluator.result import EvalResult
 from generator.generator import (
     MahjongQuestionGenerator,
     generate_question_prompt_template,
 )
-from llmmj.llmmj import calculate_score, validate_meld, validate_tiles
+from llmmj.llmmj import calculate_score, validate_hand
 
 logger = logging.getLogger(__name__)
-
-
-class EvalResult(BaseModel):
-    model: str = Field("unknown", description="モデル名")
-    correct: bool = Field(..., description="正解かどうか")
-    is_error: bool = Field(..., description="エラーで処理が停止したかどうか")
-    reason: str = Field(..., description="理由")
-    hand: Hand = Field(..., description="手牌")
-    got_answer_han: Optional[int] = Field(None, description="得られた答えの翻数")
-    got_answer_fu: Optional[int] = Field(None, description="得られた答えの符数")
-    expected_han: int = Field(..., description="期待する答えの翻数")
-    expected_fu: int = Field(..., description="期待する答えの符数")
 
 
 class MahjongEvaluator:
@@ -32,70 +20,36 @@ class MahjongEvaluator:
         self.generator = generator
         self.model_name = generator.model_name
 
-    def _pipe(self, hand: Hand, data: Dict[str, Any]) -> EvalResult:
-        # Handle error cases where hand has empty tiles
-        if not hand.tiles:
-            return EvalResult(
-                model=self.model_name,
-                correct=False,
-                is_error=True,
-                reason="Empty hand tiles (error case)",
-                hand=hand,
-                expected_han=data["answer"]["han"],
-                expected_fu=data["answer"]["fu"],
-            )
+    def _hand_2_result(self, hand: Hand, data: Dict[str, Any]) -> EvalResult:
+        # Use centralized validate_hand function
+        try:
+            validate_hand(hand)
+        except ValueError as e:
+            # Map the error messages to appropriate reasons
+            error_msg = str(e)
+            is_error = False
 
-        # 手牌の形式チェック
-        if not validate_tiles(hand.tiles):
+            if "tiles is required" in error_msg:
+                is_error = True
+                reason = "Empty hand tiles (error case)"
+            elif "Invalid tile format in tiles" in error_msg:
+                reason = "Invalid tile format in hand"
+            elif "Invalid tile format in dora indicators" in error_msg:
+                reason = "Invalid tile format in dora indicators"
+            elif "Invalid meld in hand" in error_msg:
+                reason = "Invalid meld in hand"
+            elif "Invalid tile count in hand" in error_msg:
+                reason = "Invalid tile count in hand"
+            elif "Invalid win tile in hand" in error_msg:
+                reason = "Invalid win tile in hand"
+            else:
+                reason = error_msg
+
             return EvalResult(
                 model=self.model_name,
                 correct=False,
-                is_error=False,
-                reason="Invalid tile format in hand",
-                hand=hand,
-                expected_han=data["answer"]["han"],
-                expected_fu=data["answer"]["fu"],
-            )
-        # ドラ表示牌の形式チェック
-        if hand.dora_indicators and not validate_tiles(hand.dora_indicators):
-            return EvalResult(
-                model=self.model_name,
-                correct=False,
-                is_error=False,
-                reason="Invalid tile format in dora indicators",
-                hand=hand,
-                expected_han=data["answer"]["han"],
-                expected_fu=data["answer"]["fu"],
-            )
-        # 鳴きの形式チェック
-        if hand.melds and not validate_meld(hand.tiles, hand.melds):
-            return EvalResult(
-                model=self.model_name,
-                correct=False,
-                is_error=False,
-                reason="Invalid meld in hand",
-                hand=hand,
-                expected_han=data["answer"]["han"],
-                expected_fu=data["answer"]["fu"],
-            )
-        # # 手牌の枚数チェック
-        if hand.tiles and len(hand.tiles) < 14:
-            return EvalResult(
-                model=self.model_name,
-                correct=False,
-                is_error=False,
-                reason="Invalid tile count in hand",
-                hand=hand,
-                expected_han=data["answer"]["han"],
-                expected_fu=data["answer"]["fu"],
-            )
-        # 和了牌の形式チェック
-        if hand.win_tile and hand.win_tile not in hand.tiles:
-            return EvalResult(
-                model=self.model_name,
-                correct=False,
-                is_error=False,
-                reason="Invalid win tile in hand",
+                is_error=is_error,
+                reason=reason,
                 hand=hand,
                 expected_han=data["answer"]["han"],
                 expected_fu=data["answer"]["fu"],
@@ -184,7 +138,7 @@ class MahjongEvaluator:
                 eval_results.append(eval_result)
                 continue
 
-            eval_result = self._pipe(hand, d)
+            eval_result = self._hand_2_result(hand, d)
             eval_results.append(eval_result)
 
         return self.result_to_df(eval_results)

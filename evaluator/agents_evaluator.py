@@ -4,34 +4,22 @@ import logging
 import sys
 import uuid
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pandas as pd
-from pydantic import BaseModel, Field
 
 from entity.entity import Hand
+from evaluator.result import EvalResult
 from llmmj.llmmj import calculate_score, validate_hand
 from runner import get_loop_runner, get_sequential_runner, run
 
 logger = logging.getLogger(__name__)
 
 
-class EvalResult(BaseModel):
-    model: str = Field("unknown", description="モデル名")
-    correct: bool = Field(..., description="正解かどうか")
-    is_error: bool = Field(..., description="エラーで処理が停止したかどうか")
-    reason: str = Field(..., description="理由")
-    hand: Hand = Field(..., description="手牌")
-    got_answer_han: Optional[int] = Field(None, description="得られた答えの翻数")
-    got_answer_fu: Optional[int] = Field(None, description="得られた答えの符数")
-    expected_han: int = Field(..., description="期待する答えの翻数")
-    expected_fu: int = Field(..., description="期待する答えの符数")
-
-
-class MahjongEvaluatorSequential:
+class MahjongMultiAgentsEvaluator:
     def __init__(self, runner_type: str = "sequential"):
         self.runner_type = runner_type
         self.app_name = "mahjong_evaluator"
@@ -74,7 +62,7 @@ class MahjongEvaluatorSequential:
             logger.error(f"Error in _generate_hand_from_query: {e}")
             raise
 
-    def _pipe(self, hand: Hand, data: Dict[str, Any]) -> EvalResult:
+    def _hand_2_result(self, hand: Hand, data: Dict[str, Any]) -> EvalResult:
         # Handle error cases where hand has empty tiles
         try:
             validate_hand(hand)
@@ -144,7 +132,6 @@ class MahjongEvaluatorSequential:
                     d["query"], self.app_name, user_id, session_id, d
                 )
             except Exception as e:
-                logger.error(f"Error generating question: {e}")
                 # Create an error result instead of raising the exception
                 eval_result = EvalResult(
                     model=self.model_name,
@@ -158,7 +145,7 @@ class MahjongEvaluatorSequential:
                 eval_results.append(eval_result)
                 continue
 
-            eval_result = self._pipe(hand, d)
+            eval_result = self._hand_2_result(hand, d)
             eval_results.append(eval_result)
 
         return self.result_to_df(eval_results)

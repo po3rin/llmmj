@@ -2,8 +2,7 @@ import os
 
 from google.adk.agents import Agent, SequentialAgent
 
-from tools.calculation import calculate_mahjong_score
-from tools.calculation import final_output_message_check
+from tools.calculation import calculate_mahjong_score, final_output_message_check
 
 MODEL = "gemini-2.5-flash"
 

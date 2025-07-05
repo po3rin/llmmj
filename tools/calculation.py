@@ -10,8 +10,7 @@ from entity.entity import Hand, MeldInfo
 from llmmj.llmmj import (
     convert_melds_to_mahjong_format,
     convert_tiles_to_136_array,
-    validate_meld,
-    validate_tiles,
+    validate_hand,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -53,7 +52,7 @@ def calculate_mahjong_score(
     """
     logging.info("hello calculate_mahjong_score!!!")
 
-    check_hand_validity_result = check_hand_validity(tiles, melds)
+    check_hand_validity_result = check_hand_validity(tiles, melds, win_tile)
     if check_hand_validity_result["status"] == "error":
         return check_hand_validity_result
 
@@ -133,6 +132,7 @@ def calculate_mahjong_score(
 def check_hand_validity(
     tiles: List[str],
     melds: Optional[List[Dict[str, Any]]],
+    win_tile: Optional[str] = None,
 ) -> dict:
     """Check if the hand & melds is valid.
 
@@ -148,8 +148,9 @@ def check_hand_validity(
     """
     logging.info("hello check_hand_validity!!!")
 
+    # Convert dict melds to MeldInfo for validation
+    converted_melds = None
     if melds:
-        # Convert dict melds to MeldInfo for validation
         converted_melds = []
         for meld in melds:
             if not isinstance(meld, dict) or "tiles" not in meld:
@@ -161,13 +162,25 @@ def check_hand_validity(
                 MeldInfo(tiles=meld["tiles"], is_open=meld.get("is_open", True))
             )
 
-        if not validate_meld(tiles, converted_melds):
+    # If win_tile is provided, create Hand object and use centralized validation
+    if win_tile:
+        hand = Hand(tiles=tiles, melds=converted_melds, win_tile=win_tile)
+        try:
+            validate_hand(hand)
+            return {"status": "success"}
+        except ValueError as e:
+            return {"status": "error", "error": str(e)}
+    else:
+        # Basic validation without win_tile using the individual validation functions
+        from llmmj.llmmj import validate_meld, validate_tiles
+
+        if not validate_tiles(tiles):
+            return {"status": "error", "error": "Invalid tiles"}
+
+        if converted_melds and not validate_meld(tiles, converted_melds):
             return {"status": "error", "error": "Invalid meld"}
 
-    if not validate_tiles(tiles):
-        return {"status": "error", "error": "Invalid tiles"}
-
-    return {"status": "success"}
+        return {"status": "success"}
 
 
 def final_output_message_check(message: str) -> dict:

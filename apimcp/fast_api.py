@@ -5,7 +5,7 @@ from typing import Dict
 from fastapi import FastAPI, HTTPException
 
 from entity.entity import ScoreRequest, ScoreResponse
-from llmmj.llmmj import calculate_score, validate_tiles
+from llmmj.llmmj import calculate_score, validate_hand
 
 # ロギングの設定
 logging.basicConfig(
@@ -36,31 +36,12 @@ async def calculate(request: ScoreRequest) -> ScoreResponse:
     """
     logger.info(f"Received score calculation request: {request}")
 
-    # 手牌の形式チェック
-    if not validate_tiles(request.hand.tiles):
-        logger.error(f"Invalid tile format in hand: {request.hand.tiles}")
-        raise HTTPException(status_code=400, detail="Invalid tile format in hand")
-
-    # ドラ表示牌の形式チェック
-    if request.hand.dora_indicators and not validate_tiles(
-        request.hand.dora_indicators
-    ):
-        logger.error(
-            f"Invalid tile format in dora indicators: {request.hand.dora_indicators}"
-        )
-        raise HTTPException(
-            status_code=400, detail="Invalid tile format in dora indicators"
-        )
-
-    # 鳴きの形式チェック
-    if request.hand.melds:
-        for meld in request.hand.melds:
-            meld_tiles = meld.tiles if hasattr(meld, "tiles") else meld
-            if not validate_tiles(meld_tiles):
-                logger.error(f"Invalid tile format in melds: {meld_tiles}")
-                raise HTTPException(
-                    status_code=400, detail="Invalid tile format in melds"
-                )
+    # Use centralized validation
+    try:
+        validate_hand(request.hand)
+    except ValueError as e:
+        logger.error(f"Hand validation failed: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
 
     # 点数計算
     result = calculate_score(request.hand)

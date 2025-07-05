@@ -18,7 +18,7 @@ East:1z, South:2z, West:3z, North:4z, White:5z, Green:6z, Red:7z
 """
 
 required_json_format_str = """
- ## **Required JSON Format**
+## **Required JSON Format**
     - The message must be in the following JSON format:
         {
             "tiles": list[str],

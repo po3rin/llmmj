@@ -4,7 +4,7 @@ from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
 from entity.entity import Hand, MeldInfo, ScoreRequest
-from llmmj.llmmj import calculate_score, validate_tiles
+from llmmj.llmmj import calculate_score, validate_hand
 
 
 def _is_valid_chi(sorted_tiles: List[str]) -> bool:
@@ -202,23 +202,43 @@ class ValidateMahjongHandTool(BaseTool):
         errors = []
         warnings = []
 
-        # Basic validation
-        if not validate_tiles(tiles):
-            errors.append("Invalid tile format in hand")
+        # Create Hand object for centralized validation
+        meld_infos = []
+        if melds:
+            for meld in melds:
+                if isinstance(meld, dict):
+                    meld_tiles_list = meld.get("tiles", [])
+                else:
+                    meld_tiles_list = meld
+                meld_infos.append(MeldInfo(tiles=meld_tiles_list))
 
-        if len(tiles) < 14:
-            errors.append(
-                f"Hand should have at least 14 tiles, but has {len(tiles)} tiles"
-            )
+        hand = Hand(
+            tiles=tiles, win_tile=win_tile, melds=meld_infos if meld_infos else None
+        )
 
-        if win_tile and not validate_tiles([win_tile]):
-            errors.append("Invalid tile format in win_tile")
+        # Use centralized validation
+        try:
+            validate_hand(hand)
+        except ValueError as e:
+            error_msg = str(e)
+            if "tiles is required" in error_msg:
+                errors.append("Invalid tile format in hand")
+            elif "Invalid tile format in tiles" in error_msg:
+                errors.append("Invalid tile format in hand")
+            elif "Invalid tile format in dora indicators" in error_msg:
+                errors.append("Invalid tile format in dora indicators")
+            elif "Invalid meld in hand" in error_msg:
+                errors.append("Invalid meld in hand")
+            elif "Invalid tile count in hand" in error_msg:
+                errors.append(
+                    f"Hand should have at least 14 tiles, but has {len(tiles)} tiles"
+                )
+            elif "Invalid win tile in hand" in error_msg:
+                errors.append("Win tile is not in the hand")
+            else:
+                errors.append(error_msg)
 
-        if win_tile and win_tile not in tiles:
-            errors.append("Win tile is not in the hand")
-
-        # Validate melds
-        meld_tiles = []
+        # Additional detailed meld validation for better error messages
         if melds:
             for i, meld in enumerate(melds):
                 if isinstance(meld, dict):
@@ -226,13 +246,18 @@ class ValidateMahjongHandTool(BaseTool):
                 else:
                     meld_tiles_list = meld
 
-                if not validate_tiles(meld_tiles_list):
-                    errors.append(f"Invalid tile format in meld {i}")
-                elif len(meld_tiles_list) not in [3, 4]:
+                # Check if meld tiles are present in hand tiles
+                for meld_tile in meld_tiles_list:
+                    if meld_tile not in tiles:
+                        errors.append(
+                            f"Meld tile {meld_tile} is not present in hand tiles"
+                        )
+
+                if not errors and len(meld_tiles_list) not in [3, 4]:
                     errors.append(
                         f"Meld {i} should have 3 or 4 tiles, but has {len(meld_tiles_list)}"
                     )
-                else:
+                elif not errors:
                     # Check if meld is valid (same tiles for pon/kan, consecutive for chi)
                     if len(meld_tiles_list) == 4:
                         # Kan: all 4 tiles should be the same
@@ -251,13 +276,6 @@ class ValidateMahjongHandTool(BaseTool):
                                 errors.append(
                                     f"Meld {i} is neither a valid pon nor chi"
                                 )
-
-                    meld_tiles.extend(meld_tiles_list)
-
-        # Check if meld tiles are all present in hand tiles
-        for meld_tile in meld_tiles:
-            if meld_tile not in tiles:
-                errors.append(f"Meld tile {meld_tile} is not present in hand tiles")
 
         # Check tile counts
         tile_counts = {}

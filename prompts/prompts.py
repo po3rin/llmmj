@@ -1,375 +1,64 @@
 import os
 
-rule_path = os.path.join(os.path.dirname(__file__), "../sources/rule.md")
+from .parts import cot_str, required_json_format_str, tile_notation_str
+
+rule_path = os.path.join(os.path.dirname(__file__), "../sources/rule_en.md")
 with open(rule_path, "r") as f:
     rule_str = f.read()
 
-generate_question_prompt_template = """
-あなたは日本のリーチ麻雀の点数計算問題を作成する専門家です。
+generate_question_prompt_template = f"""
+You are an expert in creating Japanese Riichi Mahjong scoring problems.
 
-## 前提知識
-### 牌の表記方法
-麻雀の手牌は136形式で表されます。萬子をm、筒子をp、索子をs、字牌をzで表します。各牌は4枚ずつあります。
-1萬:1m, 2萬:2m, 3萬:3m, 4萬:4m, 5萬:5m, 6萬:6m, 7萬:7m, 8萬:8m, 9萬:9m
-1筒:1p, 2筒:2p, 3筒:3p, 4筒:4p, 5筒:5p, 6筒:6p, 7筒:7p, 8筒:8p, 9筒:9p
-1索:1s, 2索:2s, 3索:3s, 4索:4s, 5索:5s, 6索:6s, 7索:7s, 8索:8s, 9索:9s
-東:1z, 南:2z, 西:3z, 北:4z, 白:5z, 發:6z, 中:7z
+## Background Knowledge
+{tile_notation_str}
 
-下記のパラメータを使って、指定した文字列が答えになるような問題を作成してください。必ず下記パラメータをキーにもつJSONオブジェクトを返してください。
+{required_json_format_str}
 
-## パラメータの説明:bool値以外のパラメータは全て必須です。
-tiles: 136形式の配列であり和了時の手牌です。
-       重要: meldsで指定された牌も含めて、手牌の全ての牌を含める必要があります。
-       例: 手牌10枚+暗槓4枚+和了牌1枚の場合、tiles=["1m", "2m", "3m", "4m", "4m", "5p", "5p", "5p", "7p", "8p", "1z", "1z", "1z", "1z", "1s"]のように15枚全てを指定。
-melds: 鳴きの情報を格納する配列です。MeldInfo形式のみサポート:
-        MeldInfo形式: [{{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}}] - カンの明暗を指定可能
-        - tiles パラメータ: 鳴きの牌（136形式）。この牌はtilesフィールドにも含まれている必要があります。
-        - is_open パラメータ: true=明刻（ミンカン、ポン、チー）、false=暗刻（アンカン）
-        
-        重要: meldsで指定した牌は、tilesフィールドにも重複して含める必要があります。
-        例: 暗槓の場合
-            tiles=["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "1s", "1z", "1z", "1z", "1z", "1s"] (15枚)
-            melds=[{{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}}]
-            win_tile="1s"
-win_tile: 和了牌です。例: "1m"
-dora_indicators: ドラ表示牌のリストです。例: ["2m"]
-is_riichi: リーチ宣言済みかどうかです。
-is_tsumo: 自摸和了かどうかです。
-is_ippatsu: 一発かどうかです。
-is_rinshan: 嶺上開花かどうかです。
-is_chankan: 槍槓かどうかです。
-is_haitei: 海底摸月かどうかです。
-is_houtei: 河底撈魚かどうかです。
-is_daburu_riichi: ダブルリーチかどうかです。
-is_nagashi_mangan: 流し満貫かどうかです。
-is_tenhou: 天和かどうかです。
-is_chiihou: 地和かどうかです。
-is_renhou: 人和かどうかです。
-is_open_riichi: オープンリーチかどうかです。
-player_wind: 自風です。
-round_wind: 場風です。
+## Instructions
+{{query}}
+"""
 
-## 注意点
-必ず下記パラメータをキーにもつJSONオブジェクトを返してください。数値だけを返さないでください。
+generate_question_with_cot_and_rule_prompt_template = f"""
+You are an expert in creating Japanese Riichi Mahjong scoring problems.
 
-{format_instructions}
+## Background Knowledge
+{tile_notation_str}
 
-## 指示
-{query}
+### Calculation Rules
+{rule_str}
+
+{cot_str}
+
+{required_json_format_str}
+
+## Instructions
+{{query}}
 """
 
 
-generate_question_with_cot_prompt_template = """
-あなたは日本のリーチ麻雀の点数計算問題を作成する専門家です。
+generate_question_with_tools_prompt_template = f"""
+You are an expert in creating Japanese Riichi Mahjong scoring problems. 
 
-## 前提知識
-### 牌の表記方法
-麻雀の手牌は136形式で表されます。萬子をm、筒子をp、索子をs、字牌をzで表します。各牌は4枚ずつあります。
-1萬:1m, 2萬:2m, 3萬:3m, 4萬:4m, 5萬:5m, 6萬:6m, 7萬:7m, 8萬:8m, 9萬:9m
-1筒:1p, 2筒:2p, 3筒:3p, 4筒:4p, 5筒:5p, 6筒:6p, 7筒:7p, 8筒:8p, 9筒:9p
-1索:1s, 2索:2s, 3索:3s, 4索:4s, 5索:5s, 6索:6s, 7索:7s, 8索:8s, 9索:9s
-東:1z, 南:2z, 西:3z, 北:4z, 白:5z, 發:6z, 中:7z
+## ** Required Steps **
+1. Generate a problem.
+2. Use the calculate_mahjong_score tool to verify that the parameters are correct and that the calculation result of the problem matches the specified answer.
+3. Return the problem and the answer.
+4. If the parameters are incorrect or the calculation result does not match the specified answer, repeat the process from step 1.
 
-下記のパラメータを使って、指定した文字列が答えになるような問題を作成してください。必ず下記パラメータをキーにもつJSONオブジェクトを返してください。
+## Background Knowledge
+{tile_notation_str}
 
-## パラメータの説明:bool値以外のパラメータは全て必須です。
-tiles: 136形式の配列であり和了時の手牌です。
-       重要: meldsで指定された牌も含めて、手牌の全ての牌を含める必要があります。
-       例: 手牌10枚+暗槓4枚+和了牌1枚の場合、tiles=["1m", "2m", "3m", "4m", "4m", "5p", "5p", "5p", "7p", "8p", "1z", "1z", "1z", "1z", "1s"]のように15枚全てを指定。
-melds: 鳴きの情報を格納する配列です。MeldInfo形式のみサポート:
-        MeldInfo形式: [{{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}}] - カンの明暗を指定可能
-        - tiles パラメータ: 鳴きの牌（136形式）。この牌はtilesフィールドにも含まれている必要があります。
-        - is_open パラメータ: true=明刻（ミンカン、ポン、チー）、false=暗刻（アンカン）
-        
-        重要: meldsで指定した牌は、tilesフィールドにも重複して含める必要があります。
-        例: 暗槓の場合
-            tiles=["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "1s", "1z", "1z", "1z", "1z", "1s"] (15枚)
-            melds=[{{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}}]
-            win_tile="1s"
-win_tile: 和了牌です。例: "1m"
-dora_indicators: ドラ表示牌のリストです。例: ["2m"]
-is_riichi: リーチ宣言済みかどうかです。
-is_tsumo: 自摸和了かどうかです。
-is_ippatsu: 一発かどうかです。
-is_rinshan: 嶺上開花かどうかです。
-is_chankan: 槍槓かどうかです。
-is_haitei: 海底摸月かどうかです。
-is_houtei: 河底撈魚かどうかです。
-is_daburu_riichi: ダブルリーチかどうかです。
-is_nagashi_mangan: 流し満貫かどうかです。
-is_tenhou: 天和かどうかです。
-is_chiihou: 地和かどうかです。
-is_renhou: 人和かどうかです。
-is_open_riichi: オープンリーチかどうかです。
-player_wind: 自風です。
-round_wind: 場風です。
+### Calculation Rules
+{rule_str}
 
-それぞれの思考ステップ付きの例を記載しています。このフォーマットに続いて、最後の問題にも同様の流れで答えてください。
+### Example of thinking steps
+{cot_str}
 
-### 考え方の例1
-- 問題:答えが3飜40符になる問題を作ってください
-- 考え方：
-    - 符が40符になるためにどんな手牌と待ちになるかを考える
-        - 基本符20符
-        - 2~8の暗刻が1つで4符
-        - 面前ロンで10符
-        - リャンメン待ちで0符
-        - 合計34符で、切り上げ40符
-    - 飜数は3飜になるためにどんな役が必要か考える
-        - リーチで1飜
-        - ドラ2枚で2飜
-        - 合計3飜
-    - 手牌は1m, 2m, 3m, 4m, 4m, 5p, 5p, 5p, 7p, 8p, 2z, 2z, 2z
-        - リーチ
-        - 9pでのロンあがり
-        - ドラ表示牌は3mなので、ドラは4m
-        - 答え:3飜40符
+{required_json_format_str}
 
-### 考え方の例2
-- 問題:答えが2飜50符になる問題を作ってください
-- 考え方：
-    - 符が50符になるためにどんな手牌と待ちになるかを考える
-        - 基本符20符
-        - 1,9,字牌の暗刻が1つで8符
-        - 2~8の明刻(鳴き)が1つで4符
-        - 面前ロンで10符
-        - 単騎待ちで2符
-        - 合計44符で、切り上げ50符
-    - 飜数は2飜になるためにどんな役が必要か考える
-        - リーチで1飜
-        - 一盃口で1飜
-        - 合計2飜
-    - 手牌は2m, 2m, 3m, 3m, 4m, 4m, 5p, 5p, 5p, 1z, 1z, 1z, 2z
-        - リーチ
-        - 2zでのロンあがり
-        - ドラ表示牌は2zなので、ドラ3z
-        - 答え:2飜50符
+### Tool Description
+- calculate_mahjong_score: Calculates mahjong scores. From information such as hand tiles, winning tile, melds, dora etc., it calculates han, fu, and points, and also returns details of the yaku.
 
-## 注意点
-必ず下記パラメータをキーにもつJSONオブジェクトを返してください。数値だけを返さないでください。
-
-{format_instructions}
-
-## 指示
-{query}
+## Instructions
+{{query}}
 """
-
-generate_question_with_cot_and_rule_prompt_template = (
-    """
-あなたは日本のリーチ麻雀の点数計算問題を作成する専門家です。
-
-## 前提知識
-### 牌の表記方法
-麻雀の手牌は136形式で表されます。萬子をm、筒子をp、索子をs、字牌をzで表します。各牌は4枚ずつあります。
-1萬:1m, 2萬:2m, 3萬:3m, 4萬:4m, 5萬:5m, 6萬:6m, 7萬:7m, 8萬:8m, 9萬:9m
-1筒:1p, 2筒:2p, 3筒:3p, 4筒:4p, 5筒:5p, 6筒:6p, 7筒:7p, 8筒:8p, 9筒:9p
-1索:1s, 2索:2s, 3索:3s, 4索:4s, 5索:5s, 6索:6s, 7索:7s, 8索:8s, 9索:9s
-東:1z, 南:2z, 西:3z, 北:4z, 白:5z, 發:6z, 中:7z
-
-### 計算ルール
-"""
-    + rule_str
-    + """
-
-## 要求
-下記のパラメータを使って、指定した文字列が答えになるような問題を作成してください。必ず下記パラメータをキーにもつJSONオブジェクトを返してください。
-
-### パラメータの説明:bool値以外のパラメータは全て必須です。
-tiles: 136形式の配列であり和了時の手牌です。
-       重要: meldsで指定された牌も含めて、手牌の全ての牌を含める必要があります。
-       例: 手牌10枚+暗槓4枚+和了牌1枚の場合、tiles=["1m", "2m", "3m", "4m", "4m", "5p", "5p", "5p", "7p", "8p", "1z", "1z", "1z", "1z", "1s"]のように15枚全てを指定。
-melds: 鳴きの情報を格納する配列です。MeldInfo形式のみサポート:
-        MeldInfo形式: [{{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}}] - カンの明暗を指定可能
-        - tiles パラメータ: 鳴きの牌（136形式）。この牌はtilesフィールドにも含まれている必要があります。
-        - is_open パラメータ: true=明刻（ミンカン、ポン、チー）、false=暗刻（アンカン）
-        
-        重要: meldsで指定した牌は、tilesフィールドにも重複して含める必要があります。
-        例: 暗槓の場合
-            tiles=["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "1s", "1z", "1z", "1z", "1z", "1s"] (15枚)
-            melds=[{{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}}]
-            win_tile="1s"
-win_tile: 和了牌です。例: "1m"
-dora_indicators: ドラ表示牌のリストです。例: ["2m"]
-is_riichi: リーチ宣言済みかどうかです。
-is_tsumo: 自摸和了かどうかです。
-is_ippatsu: 一発かどうかです。
-is_rinshan: 嶺上開花かどうかです。
-is_chankan: 槍槓かどうかです。
-is_haitei: 海底摸月かどうかです。
-is_houtei: 河底撈魚かどうかです。
-is_daburu_riichi: ダブルリーチかどうかです。
-is_nagashi_mangan: 流し満貫かどうかです。
-is_tenhou: 天和かどうかです。
-is_chiihou: 地和かどうかです。
-is_renhou: 人和かどうかです。
-is_open_riichi: オープンリーチかどうかです。
-player_wind: 自風です。
-round_wind: 場風です。
-
-それぞれの思考ステップ付きの例を記載しています。このフォーマットに続いて、最後の問題にも同様の流れで答えてください。
-
-### 考え方の例1
-- 問題:答えが3飜40符になる問題を作ってください
-- 考え方：
-    - 符が40符になるためにどんな手牌と待ちになるかを考える
-        - 基本符20符
-        - 2~8の暗刻が1つで4符
-        - 面前ロンで10符
-        - リャンメン待ちで0符
-        - 合計34符で、切り上げ40符
-    - 飜数は3飜になるためにどんな役が必要か考える
-        - リーチで1飜
-        - ドラ2枚で2飜
-        - 合計3飜
-    - 手牌は1m, 2m, 3m, 4m, 4m, 5p, 5p, 5p, 7p, 8p, 2z, 2z, 2z
-        - リーチ
-        - 9pでのロンあがり
-        - ドラ表示牌は3mなので、ドラは4m
-        - 答え:3飜40符
-
-### 考え方の例2
-- 問題:答えが2飜50符になる問題を作ってください
-- 考え方：
-    - 符が50符になるためにどんな手牌と待ちになるかを考える
-        - 基本符20符
-        - 1,9,字牌の暗刻が1つで8符
-        - 2~8の明刻(鳴き)が1つで4符
-        - 面前ロンで10符
-        - 単騎待ちで2符
-        - 合計44符で、切り上げ50符
-    - 飜数は2飜になるためにどんな役が必要か考える
-        - リーチで1飜
-        - 一盃口で1飜
-        - 合計2飜
-    - 手牌は2m, 2m, 3m, 3m, 4m, 4m, 5p, 5p, 5p, 1z, 1z, 1z, 2z
-        - リーチ
-        - 2zでのロンあがり
-        - ドラ表示牌は2zなので、ドラ3z
-        - 答え:2飜50符
-
-## 注意点
-必ず下記パラメータをキーにもつJSONオブジェクトを返してください。数値だけを返さないでください。
-
-{format_instructions}
-
-## 指示
-{query}
-"""
-)
-
-
-generate_question_with_tools_prompt_template = (
-    """
-あなたは日本のリーチ麻雀の点数計算問題を作成する専門家です。
-
-## 前提知識
-### 牌の表記方法
-麻雀の手牌は136形式で表されます。萬子をm、筒子をp、索子をs、字牌をzで表します。各牌は4枚ずつあります。
-1萬:1m, 2萬:2m, 3萬:3m, 4萬:4m, 5萬:5m, 6萬:6m, 7萬:7m, 8萬:8m, 9萬:9m
-1筒:1p, 2筒:2p, 3筒:3p, 4筒:4p, 5筒:5p, 6筒:6p, 7筒:7p, 8筒:8p, 9筒:9p
-1索:1s, 2索:2s, 3索:3s, 4索:4s, 5索:5s, 6索:6s, 7索:7s, 8索:8s, 9索:9s
-東:1z, 南:2z, 西:3z, 北:4z, 白:5z, 發:6z, 中:7z
-
-### 計算ルール
-"""
-    + rule_str
-    + """
-
-## 要求
-下記のパラメータを使って、指定した文字列が答えになるような問題を作成してください。必ず下記パラメータをキーにもつJSONオブジェクトを返してください。
-
-### パラメータの説明:bool値以外のパラメータは全て必須です。
-tiles: 136形式の配列であり和了時の手牌です。
-       重要: meldsで指定された牌も含めて、手牌の全ての牌を含める必要があります。
-       例: 手牌10枚+暗槓4枚+和了牌1枚の場合、tiles=["1m", "2m", "3m", "4m", "4m", "5p", "5p", "5p", "7p", "8p", "1z", "1z", "1z", "1z", "1s"]のように15枚全てを指定。
-melds: 鳴きの情報を格納する配列です。MeldInfo形式のみサポート:
-        MeldInfo形式: [{{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}}] - カンの明暗を指定可能
-        - tiles パラメータ: 鳴きの牌（136形式）。この牌はtilesフィールドにも含まれている必要があります。
-        - is_open パラメータ: true=明刻（ミンカン、ポン、チー）、false=暗刻（アンカン）
-        
-        重要: meldsで指定した牌は、tilesフィールドにも重複して含める必要があります。
-        例: 暗槓の場合
-            tiles=["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "1s", "1z", "1z", "1z", "1z", "1s"] (15枚)
-            melds=[{{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}}]
-            win_tile="1s"
-win_tile: 和了牌です。例: "1m"
-dora_indicators: ドラ表示牌のリストです。例: ["2m"]
-is_riichi: リーチ宣言済みかどうかです。
-is_tsumo: 自摸和了かどうかです。
-is_ippatsu: 一発かどうかです。
-is_rinshan: 嶺上開花かどうかです。
-is_chankan: 槍槓かどうかです。
-is_haitei: 海底摸月かどうかです。
-is_houtei: 河底撈魚かどうかです。
-is_daburu_riichi: ダブルリーチかどうかです。
-is_nagashi_mangan: 流し満貫かどうかです。
-is_tenhou: 天和かどうかです。
-is_chiihou: 地和かどうかです。
-is_renhou: 人和かどうかです。
-is_open_riichi: オープンリーチかどうかです。
-player_wind: 自風です。
-round_wind: 場風です。
-
-それぞれの思考ステップ付きの例を記載しています。このフォーマットに続いて、最後の問題にも同様の流れで答えてください。
-
-### 考え方の例1
-- 問題:答えが3飜40符になる問題を作ってください
-- 考え方：
-    - 符が40符になるためにどんな手牌と待ちになるかを考える
-        - 基本符20符
-        - 2~8の暗刻が1つで4符
-        - 面前ロンで10符
-        - リャンメン待ちで0符
-        - 合計34符で、切り上げ40符
-    - 飜数は3飜になるためにどんな役が必要か考える
-        - リーチで1飜
-        - ドラ2枚で2飜
-        - 合計3飜
-    - 正しい問題のパラメータ
-        - hands: ["1m", "2m", "3m", "4m", "4m", "5m", "5m", "5m", "1p", "2p", "3p", "4p", "5p", "5p"]
-        - melds: []
-        - win_tile: "1m"
-        - dora_indicators: ["3m"]
-        - is_riichi: True
-        - is_tsumo: False
-        - is_ippatsu: False
-        - is_rinshan: False
-        - is_chankan: False
-        - is_haitei: False
-        - is_houtei: False
-
-### 考え方の例2
-- 問題:答えが2飜60符になる問題を作ってください
-- 考え方：
-    - 符が50符になるためにどんな手牌と待ちになるかを考える
-        - 基本符20符
-        - 2~8の暗刻が1つで4符
-        - 1,9,字牌のカン(melds/closed_kan)が1つで32符
-        - 単騎待ちで2符
-        - ツモあがりで2符
-        - 合計60符で、切り上げ60符
-    - 飜数は2飜になるためにどんな役が必要か考える
-        - ツモで1飜
-        - 一盃口で1飜
-        - 合計2飜
-    - 正しい問題のパラメータ
-        - hands: ["2m", "2m", "3m", "3m", "4m", "4m", "5p", "5p", "5p", "2z", "2z", "2z", "2z", "3z", "3z"]
-        - melds: [{{"tiles": ["2z", "2z", "2z", "2z"], "is_open": false}}]
-        - win_tile: "3z"
-        - dora_indicators: ["4z"]
-        - is_riichi: False
-        - is_tsumo: True
-
-## 注意点
-必ず下記パラメータをキーにもつJSONオブジェクトを返してください。数値だけを返さないでください。
-作った問題をユーザーに返す前にツールのcalculate_mahjong_scoreを使ってパラメータが正しいかどうか、問題の計算結果が指示された答えと一致するかどうかを必ず確認してください。
-
-### ツールの説明
-- calculate_mahjong_score: 麻雀の点数を計算します。手牌、和了牌、鳴き、ドラなどの情報から翻数、符数、点数を計算し、役の詳細も返します。
-
-{format_instructions}
-
-## 指示
-{query}
-"""
-)
