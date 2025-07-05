@@ -12,9 +12,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import pandas as pd
 from pydantic import BaseModel, Field
 
-from agents import get_loop_runner, get_sequential_runner, run
 from entity.entity import Hand
 from llmmj.llmmj import calculate_score, validate_hand
+from runner import get_loop_runner, get_sequential_runner, run
 
 logger = logging.getLogger(__name__)
 
@@ -166,11 +166,10 @@ class MahjongEvaluatorSequential:
     def evals(self, dataset: List[Dict[str, Any]]) -> pd.DataFrame:
         """Synchronous wrapper for evals_async."""
         try:
-            # Check if we're in an async context (like Jupyter)
-            loop = asyncio.get_running_loop()
+            # # Check if we're in an async context (like Jupyter)
+            # loop = asyncio.get_running_loop()
             # If we're already in an event loop, we need to handle it differently
             import concurrent.futures
-            import threading
 
             # Create a new thread to run the async function
             with concurrent.futures.ThreadPoolExecutor() as executor:

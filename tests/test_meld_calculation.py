@@ -1,5 +1,3 @@
-import pytest
-
 from tools.calculation import calculate_mahjong_score
 
 

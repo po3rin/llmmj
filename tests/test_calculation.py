@@ -1,8 +1,5 @@
 import json
 
-import pytest
-
-from entity.entity import MeldInfo
 from tools.calculation import (
     calculate_mahjong_score,
     check_hand_validity,

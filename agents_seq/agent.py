@@ -1,20 +1,8 @@
-import asyncio
-import logging
 import os
-from datetime import datetime
-from typing import AsyncGenerator
 
-from google.adk.agents import Agent, BaseAgent, LoopAgent, SequentialAgent
-from google.adk.agents.invocation_context import InvocationContext
-from google.adk.events import Event, EventActions
-from google.adk.models.lite_llm import LiteLlm  # For multi-model support
-from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
-from google.genai import types  # For creating message Content/Parts
-from pydantic import BaseModel, Field
+from google.adk.agents import Agent, SequentialAgent
 
-from llmmj.llmmj import calculate_score_with_json
-from tools.calculation import calculate_mahjong_score  # check_hand_validity,
+from tools.calculation import calculate_mahjong_score
 from tools.calculation import final_output_message_check
 
 MODEL = "gemini-2.5-flash"
@@ -164,41 +152,6 @@ final_output_json_generator_agent = Agent(
 print(f"✅ Agent '{final_output_json_generator_agent.name}' redefined.")
 
 
-class CheckStatusAndEscalate(BaseAgent):
-    async def _run_async_impl(
-        self, ctx: InvocationContext
-    ) -> AsyncGenerator[Event, None]:
-        expected_han = ctx.session.state.get("expected_han", None)
-        expected_fu = ctx.session.state.get("expected_fu", None)
-
-        print(f"🔍 CheckStatusAndEscalate: {expected_han}, {expected_fu}")
-        status = "fail"
-        output = ctx.session.state.get("last_final_output_message", None)
-        if output is None:
-            print("No final output message found in session state")
-            raise Exception("No final output message found in session state")
-
-        score_response = calculate_score_with_json(output)
-
-        if (
-            score_response.han == expected_han
-            and score_response.fu == expected_fu
-        ):
-            print(
-                f"✅ CheckStatusAndEscalate: got: {score_response.han}, {score_response.fu} == want: {expected_han}, {expected_fu}"
-            )
-            status = "pass"
-        else:
-            print(
-                f"❌ CheckStatusAndEscalate: got: {score_response.han}, {score_response.fu} != want: {expected_han}, {expected_fu}"
-            )
-            status = "fail"
-
-        ctx.session.state["current_score"] = score_response
-
-        should_stop = status == "pass"
-        yield Event(author=self.name, actions=EventActions(escalate=should_stop))
-
 mahjong_sequential_agent = SequentialAgent(
     name="mahjong_sequential_agent",
     sub_agents=[
@@ -207,15 +160,4 @@ mahjong_sequential_agent = SequentialAgent(
     ],
 )
 
-mahjong_loop_agent = LoopAgent(
-    name="mahjong_loop_agent",
-    max_iterations=5,
-    sub_agents=[
-        mahjong_sequential_agent,
-        CheckStatusAndEscalate(
-            name="StopChecker"
-        ),
-    ],
-)
-
-root_agent = mahjong_loop_agent
+root_agent = mahjong_sequential_agent

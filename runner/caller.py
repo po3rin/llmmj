@@ -1,8 +1,8 @@
 import logging
-from typing import AsyncGenerator
 
 from google.adk.runners import Runner
 from google.genai import types
+
 
 async def call_agent_async(query: str, runner, user_id, session_id) -> str:
     """Sends a query to the agent and prints the final response."""
@@ -66,6 +66,7 @@ async def call_agent_async(query: str, runner, user_id, session_id) -> str:
     agent_logger.info(f"SESSION[{session_id}] ========== INTERACTION END ==========")
 
     return final_response_text
+
 
 async def run(runner: Runner, user_id: str, session_id: str, query: str) -> str:
     return await call_agent_async(

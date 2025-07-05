@@ -1,6 +1,7 @@
 """Test the enhanced validation functionality in tools.py"""
 
 import pytest
+
 from llmmj.tools import ValidateMahjongHandTool
 
 
@@ -33,7 +34,7 @@ def test_valid_hand_with_ankan(validator):
         win_tile="1s",
         melds=[{"tiles": ["1z", "1z", "1z", "1z"], "is_open": False}],
     )
-    
+
     assert result["valid"] is True
     assert not result["errors"]
     assert not result["warnings"]
@@ -62,7 +63,7 @@ def test_invalid_kan_different_tiles(validator):
         win_tile="1s",
         melds=[{"tiles": ["1z", "2z", "3z", "4z"], "is_open": False}],
     )
-    
+
     assert result["valid"] is False
     assert len(result["errors"]) > 0
     assert any("identical tiles" in error for error in result["errors"])
@@ -91,7 +92,7 @@ def test_valid_chi(validator):
         win_tile="5p",
         melds=[{"tiles": ["1s", "2s", "3s"], "is_open": True}],
     )
-    
+
     assert result["valid"] is True
     assert not result["errors"]
 
@@ -119,7 +120,7 @@ def test_invalid_chi_not_consecutive(validator):
         win_tile="5p",
         melds=[{"tiles": ["1s", "3s", "5s"], "is_open": True}],
     )
-    
+
     assert result["valid"] is False
     assert len(result["errors"]) > 0
     assert any("neither a valid pon nor chi" in error for error in result["errors"])
@@ -148,7 +149,7 @@ def test_invalid_chi_honor_tiles(validator):
         win_tile="5p",
         melds=[{"tiles": ["1z", "2z", "3z"], "is_open": True}],
     )
-    
+
     assert result["valid"] is False
     assert len(result["errors"]) > 0
     assert any("neither a valid pon nor chi" in error for error in result["errors"])
@@ -176,7 +177,7 @@ def test_meld_tiles_not_in_hand(validator):
         win_tile="1s",
         melds=[{"tiles": ["1z", "1z", "1z", "1z"], "is_open": False}],
     )
-    
+
     assert result["valid"] is False
     assert len(result["errors"]) > 0
     assert any("not present in hand tiles" in error for error in result["errors"])
@@ -204,7 +205,7 @@ def test_too_many_tiles_of_same_type(validator):
         win_tile="1s",
         melds=[],
     )
-    
+
     assert result["valid"] is False
     assert len(result["errors"]) > 0
     assert any("appears more than 4 times" in error for error in result["errors"])

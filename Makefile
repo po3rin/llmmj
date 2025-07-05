@@ -26,7 +26,6 @@ lint:
 # Check code (lint + format check)
 check:
 	@echo "Checking code formatting..."
-	uv run --group dev isort --check-only .
 	uv run --group dev ruff format --check .
 	@echo "Running linter..."
 	uv run --group dev ruff check .

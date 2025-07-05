@@ -188,15 +188,13 @@ class ValidateMahjongHandTool(BaseTool):
         """Execute the tool."""
         # Handle case where input is passed as a JSON string
         if len(kwargs) == 1 and "tiles" in str(list(kwargs.values())[0]):
-            try:
-                import json
+            import json
 
-                json_str = list(kwargs.values())[0]
-                if isinstance(json_str, str):
-                    parsed_input = json.loads(json_str)
-                    kwargs = parsed_input
-            except:
-                pass
+            json_str = list(kwargs.values())[0]
+            if isinstance(json_str, str):
+                parsed_input = json.loads(json_str)
+                kwargs = parsed_input
+
         tiles = kwargs.get("tiles", [])
         win_tile = kwargs.get("win_tile")
         melds = kwargs.get("melds", [])

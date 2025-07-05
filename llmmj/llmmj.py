@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any, List, Union
+from typing import List
 
 from mahjong.hand_calculating.hand import HandCalculator
 from mahjong.hand_calculating.hand_config import HandConfig
