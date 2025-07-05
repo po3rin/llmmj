@@ -14,7 +14,8 @@ import pandas as pd
 from entity.entity import Hand
 from evaluator.result import EvalResult
 from llmmj.llmmj import calculate_score, validate_hand
-from runner import get_loop_runner, get_sequential_runner, run
+from runner.runner import get_loop_runner, get_sequential_runner, run
+from exceptions import AgentSetupError, JSONParseError, HandValidationError, ScoreCalculationError
 
 logger = logging.getLogger(__name__)
 
@@ -34,50 +35,34 @@ class MahjongMultiAgentsEvaluator:
         data: Dict[str, Any],
     ) -> Hand:
         """Use sequential_run to generate a mahjong hand from a query."""
-        try:
-            if self.runner_type == "sequential":
-                runner = await get_sequential_runner(app_name, user_id, session_id)
-            elif self.runner_type == "loop":
-                runner = await get_loop_runner(
-                    app_name,
-                    user_id,
-                    session_id,
-                    expected_han=data["answer"]["han"],
-                    expected_fu=data["answer"]["fu"],
-                )
-            else:
-                raise ValueError(f"Unknown runner_type: {self.runner_type}")
 
-            result = await run(
-                runner=runner, user_id=user_id, session_id=session_id, query=query
+        if self.runner_type == "sequential":
+            runner = await get_sequential_runner(app_name, user_id, session_id)
+        elif self.runner_type == "loop":
+            runner = await get_loop_runner(
+                app_name,
+                user_id,
+                session_id,
+                # expected_han=data["answer"]["han"],
+                # expected_fu=data["answer"]["fu"],
             )
+        else:
+            raise AgentSetupError(f"Unknown runner_type: {self.runner_type}")
 
-            # Parse the JSON result
+        result = await run(
+            runner=runner, user_id=user_id, session_id=session_id, query=query
+        )
+
+        # Parse the JSON result
+        try:
             hand_data = json.loads(result)
-            return Hand(**hand_data)
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON result: {e}, raw result: {result}")
-            raise
         except Exception as e:
-            logger.error(f"Error in _generate_hand_from_query: {e}")
-            raise
+            raise JSONParseError(f"Error parsing JSON: {e!s}") from e
+
+        return Hand(**hand_data)
+
 
     def _hand_2_result(self, hand: Hand, data: Dict[str, Any]) -> EvalResult:
-        # Handle error cases where hand has empty tiles
-        try:
-            validate_hand(hand)
-        except Exception as e:
-            logger.error(f"Error validating hand: {e!s}")
-            return EvalResult(
-                model=self.model_name,
-                correct=False,
-                is_error=True,
-                reason=f"Error validating hand: {e!s}",
-                hand=hand,
-                expected_han=data["answer"]["han"],
-                expected_fu=data["answer"]["fu"],
-            )
-
         # 点数計算
         try:
             result = calculate_score(hand)
@@ -108,13 +93,24 @@ class MahjongMultiAgentsEvaluator:
                     expected_han=data["answer"]["han"],
                     expected_fu=data["answer"]["fu"],
                 )
-        except Exception as e:
-            logger.error(f"Error calculating score: {e}")
+        except ScoreCalculationError as e:
             return EvalResult(
                 model=self.model_name,
                 correct=False,
                 is_error=True,
-                reason="Error calculating score",
+                reason=f"Error calculating score: {e!s}",
+                error_type=ScoreCalculationError.__name__,
+                hand=hand,
+                expected_han=data["answer"]["han"],
+                expected_fu=data["answer"]["fu"],
+            )
+        except Exception as e:
+            return EvalResult(
+                model=self.model_name,
+                correct=False,
+                is_error=True,
+                error_type="UnknownError",
+                reason=f"Error calculating score: {e!s}",
                 hand=hand,
                 expected_han=data["answer"]["han"],
                 expected_fu=data["answer"]["fu"],
@@ -131,14 +127,46 @@ class MahjongMultiAgentsEvaluator:
                 hand = await self._generate_hand_from_query(
                     d["query"], self.app_name, user_id, session_id, d
                 )
+            except AgentSetupError as e:
+                logger.error(f"Error setting up agent: {e!s}")
+                raise
+            except JSONParseError as e:
+                eval_result = EvalResult(
+                    model=self.model_name,
+                    correct=False,
+                    is_error=True,
+                    error_type=JSONParseError.__name__,
+                    reason=f"Error parsing JSON: {e!s}",
+                    hand=Hand(tiles=[], win_tile=""),
+                )
+                eval_results.append(eval_result)
+                continue
             except Exception as e:
                 # Create an error result instead of raising the exception
                 eval_result = EvalResult(
                     model=self.model_name,
                     correct=False,
                     is_error=True,
+                    error_type="UnknownError",
                     reason=f"Error generating question: {str(e)}",
                     hand=Hand(tiles=[], win_tile=""),
+                    expected_han=d["answer"]["han"],
+                    expected_fu=d["answer"]["fu"],
+                )
+                eval_results.append(eval_result)
+                continue
+            
+            try:
+                validate_hand(hand)
+            except HandValidationError as e:
+                logger.error(f"Error validating hand: {e!s}")
+                eval_result = EvalResult(
+                    model=self.model_name,
+                    correct=False,
+                    is_error=True,
+                    error_type=HandValidationError.__name__,
+                    reason=f"Error validating hand: {e!s}",
+                    hand=hand,
                     expected_han=d["answer"]["han"],
                     expected_fu=d["answer"]["fu"],
                 )

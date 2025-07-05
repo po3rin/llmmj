@@ -8,6 +8,7 @@ from mahjong.meld import Meld
 from mahjong.tile import TilesConverter
 
 from entity.entity import Hand, MeldInfo, ScoreResponse
+from exceptions import HandValidationError, ScoreCalculationError
 
 logger = logging.getLogger(__name__)
 
@@ -184,7 +185,7 @@ def calculate_score(hand: Hand) -> ScoreResponse:
 
     except Exception as e:
         logger.error(f"Error during score calculation: {str(e)}", exc_info=True)
-        return ScoreResponse(han=0, fu=0, score=0, yaku=[], fu_details=[], error=str(e))
+        raise ScoreCalculationError(f"Error during score calculation: {str(e)}") from e
 
 
 def validate_tiles(tiles: List[str]) -> bool:
@@ -243,29 +244,29 @@ def validate_meld(tiles: List[str], melds: List[MeldInfo]) -> bool:
 def validate_hand(hand: Hand):
     # Handle error cases where hand has empty tiles
     if not hand.tiles:
-        raise ValueError("Invalid tile format in tiles. tiles is required")
+        raise HandValidationError("Invalid tile format in tiles. tiles is required")
 
     # 手牌の形式チェック
     if not validate_tiles(hand.tiles):
-        raise ValueError("Invalid tile format in tiles. tiles is not valid")
+        raise HandValidationError("Invalid tile format in tiles. tiles is not valid")
 
     # ドラ表示牌の形式チェック
     if hand.dora_indicators and not validate_tiles(hand.dora_indicators):
-        raise ValueError(
+        raise HandValidationError(
             "Invalid tile format in dora indicators. dora_indicators is not valid"
         )
 
     # 鳴きの形式チェック
     if hand.melds and not validate_meld(hand.tiles, hand.melds):
-        raise ValueError("Invalid meld in hand. melds is not valid")
+        raise HandValidationError("Invalid meld in hand. melds is not valid")
 
     # 手牌の枚数チェック
     if hand.tiles and len(hand.tiles) < 14:
-        raise ValueError("Invalid tile count in hand. tiles is less than 14")
+        raise HandValidationError("Invalid tile count in hand. tiles is less than 14")
 
     # 和了牌の形式チェック
     if hand.win_tile and hand.win_tile not in hand.tiles:
-        raise ValueError("Invalid win tile in hand. win_tile is not in tiles")
+        raise HandValidationError("Invalid win tile in hand. win_tile is not in tiles")
 
 
 def calculate_score_with_json(json_str: str) -> ScoreResponse:

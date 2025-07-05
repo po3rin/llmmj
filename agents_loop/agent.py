@@ -60,7 +60,6 @@ mahjong_score_question_generator_agent = Agent(
     """,
     output_key="current_question",
 )
-print(f"✅ Agent '{mahjong_score_question_generator_agent.name}' redefined.")
 
 
 validation_agent = Agent(
@@ -102,7 +101,6 @@ validation_agent = Agent(
     tools=[calculate_mahjong_score, exit_loop],
     output_key="validation_errors",
 )
-print(f"✅ Agent '{validation_agent.name}' redefined.")
 
 
 refining_agent = Agent(
@@ -129,7 +127,6 @@ refining_agent = Agent(
     + rule_str,
     output_key="current_question",
 )
-print(f"✅ Agent '{refining_agent.name}' redefined.")
 
 
 output_json_formatter_agent = Agent(
@@ -148,7 +145,6 @@ output_json_formatter_agent = Agent(
     + required_json_format_str,
     output_key="current_output_json",
 )
-print(f"✅ Agent '{output_json_formatter_agent.name}' redefined.")
 
 
 output_json_validation_agent = Agent(
@@ -181,7 +177,6 @@ output_json_validation_agent = Agent(
     tools=[calculate_score_with_json, exit_loop],
     output_key="output_json_validation_errors",
 )
-print(f"✅ Agent '{output_json_validation_agent.name}' redefined.")
 
 
 output_json_refining_agent = Agent(
@@ -203,7 +198,6 @@ output_json_refining_agent = Agent(
     + required_json_format_str,
     output_key="current_output_json",
 )
-print(f"✅ Agent '{output_json_refining_agent.name}' redefined.")
 
 
 candidate_loop_agent = LoopAgent(
@@ -215,15 +209,13 @@ candidate_loop_agent = LoopAgent(
         refining_agent,
     ],
 )
-print(f"✅ Agent '{candidate_loop_agent.name}' redefined.")
 
 output_candidate_loop_agent = LoopAgent(
     name="output_candidate_loop_agent",
     description="This agent is responsible for managing the collaboration between the output json formatter agent and the output json validation agent.",
-    max_iterations=5,
+    max_iterations=8,
     sub_agents=[output_json_validation_agent, output_json_refining_agent],
 )
-print(f"✅ Agent '{output_candidate_loop_agent.name}' redefined.")
 
 mahjong_loop_agent = SequentialAgent(
     name="mahjong_loop_agent",
@@ -235,7 +227,6 @@ mahjong_loop_agent = SequentialAgent(
         output_candidate_loop_agent,
     ],
 )
-print(f"✅ Agent '{mahjong_loop_agent.name}' redefined.")
 
 
 root_agent = mahjong_loop_agent

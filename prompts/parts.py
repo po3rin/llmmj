@@ -20,7 +20,7 @@ East:1z, South:2z, West:3z, North:4z, White:5z, Green:6z, Red:7z
 required_json_format_str = """
 ## **Required JSON Format**
     - The message must be in the following JSON format:
-        {
+        {{
             "tiles": list[str],
             "melds": list[MeldInfo],
             "win_tile": str,
@@ -29,9 +29,9 @@ required_json_format_str = """
             "is_tsumo": bool,
             "player_wind": str,
             "round_wind": str
-        }
+        }}
     - tiles: list[str]: Array in 136 format representing the winning hand. Important: Must include all tiles in the hand, including those specified in melds. Example: For a hand with 10 tiles + 4 ankan tiles + 1 winning tile, specify all 15 tiles like tiles=['1m', '2m', '3m', '4m', '4m', '5p', '5p', '5p', '7p', '8p', '1z', '1z', '1z', '1z', '1s'].
-    - melds: list[MeldInfo]: Meld information. MeldInfo format only: [{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}]
+    - melds: list[MeldInfo]: Meld information. MeldInfo format only: [{{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}}]
         - tiles: Meld tiles (136 format). These tiles must also be included in the tiles field.
         - is_open: true=open meld (minkan, pon, chi), false=closed meld (ankan)
     - win_tile (str): The winning tile
