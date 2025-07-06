@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-
+    
     - name: Install uv
       uses: astral-sh/setup-uv@v3
-
+      
     - name: Set up Python 3.12
       run: uv python install 3.12
-
+      
     - name: Debug - Show Python and UV info
       run: |
         echo "=== UV Info ==="
@@ -31,14 +31,14 @@ jobs:
         ls -la
         echo "=== Project Structure ==="
         find . -name "*.py" | head -20
-
+        
     - name: Install dependencies
       run: |
         echo "=== Installing dependencies ==="
         uv sync --dev --verbose
         echo "=== Installed packages ==="
         uv pip list
-
+        
     - name: Test imports without tests
       run: |
         echo "=== Testing basic imports ==="
@@ -72,16 +72,16 @@ jobs:
     needs: debug-setup
     steps:
     - uses: actions/checkout@v4
-
+    
     - name: Install uv
       uses: astral-sh/setup-uv@v3
-
+      
     - name: Set up Python 3.12
       run: uv python install 3.12
-
+      
     - name: Install dependencies
       run: uv sync --dev
-
+      
     - name: Test basic functionality
       run: |
         export PYTHONPATH="${PYTHONPATH}:$(pwd)"
@@ -112,16 +112,16 @@ jobs:
     needs: debug-setup
     steps:
     - uses: actions/checkout@v4
-
+    
     - name: Install uv
       uses: astral-sh/setup-uv@v3
-
+      
     - name: Set up Python 3.12
       run: uv python install 3.12
-
+      
     - name: Install dependencies
       run: uv sync --dev
-
+      
     - name: Check syntax of all Python files
       run: |
         echo "=== Checking syntax ==="
@@ -147,16 +147,16 @@ jobs:
     needs: [debug-setup, basic-test, syntax-check]
     steps:
     - uses: actions/checkout@v4
-
+    
     - name: Install uv
       uses: astral-sh/setup-uv@v3
-
+      
     - name: Set up Python 3.12
       run: uv python install 3.12
-
+      
     - name: Install dependencies
       run: uv sync --dev
-
+      
     - name: Run simple test
       run: |
         export PYTHONPATH="${PYTHONPATH}:$(pwd)"
