@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 from entity.entity import Hand
-from exceptions import AgentSetupError, JSONParseError
+from exceptions.exceptions import AgentSetupError, JSONParseError
 from generator.generator import MahjongQuestionGenerator
 
 

@@ -5,7 +5,7 @@ import pandas as pd
 from entity.entity import Hand
 from evaluator.evaluator import MahjongEvaluator, MultiModelEvaluator
 from evaluator.result import EvalResult
-from exceptions import AgentSetupError, JSONParseError
+from exceptions.exceptions import AgentSetupError, JSONParseError
 from generator.generator import MahjongQuestionGenerator
 
 

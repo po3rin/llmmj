@@ -10,7 +10,7 @@ from evaluator.libs import (
     result_to_df
 )
 from evaluator.result import EvalResult
-from exceptions import HandValidationError, ScoreCalculationError
+from exceptions.exceptions import HandValidationError, ScoreCalculationError
 from llmmj.llmmj import ScoreResponse
 
 

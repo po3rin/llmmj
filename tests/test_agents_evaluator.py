@@ -7,7 +7,7 @@ import pandas as pd
 from entity.entity import Hand
 from evaluator.agents_evaluator import MahjongMultiAgentsEvaluator
 from evaluator.result import EvalResult
-from exceptions import AgentSetupError, JSONParseError
+from exceptions.exceptions import AgentSetupError, JSONParseError
 
 
 class TestMahjongMultiAgentsEvaluator(unittest.TestCase):
