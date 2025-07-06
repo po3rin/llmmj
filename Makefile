@@ -1,4 +1,4 @@
-.PHONY: help format lint check install clean test
+.PHONY: help format lint check install clean test clean-dist
 
 # Default target
 help:
@@ -9,6 +9,7 @@ help:
 	@echo "  test    - Run tests with pytest"
 	@echo "  install - Install dependencies"
 	@echo "  clean   - Clean cache and temporary files"
+	@echo "  clean-dist - Clean files in dist directory (keep directories)"
 
 # Format code
 format:
@@ -48,3 +49,9 @@ clean:
 	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name ".ruff_cache" -exec rm -rf {} + 2>/dev/null || true
 	@echo "Cache files cleaned!"
+
+# Clean dist directory (files only, keep directories)
+clean-dist:
+	@echo "Cleaning files in dist directory..."
+	find dist -type f -delete 2>/dev/null || true
+	@echo "Dist files cleaned!"

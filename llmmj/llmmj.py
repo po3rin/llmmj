@@ -23,7 +23,6 @@ def convert_tiles_to_136_array(tiles: List[str]) -> List[int]:
     Returns:
         List[int]: 136形式の配列
     """
-    logger.debug(f"Converting tiles to 136 array: {tiles}")
     man = ""
     pin = ""
     sou = ""
@@ -42,7 +41,6 @@ def convert_tiles_to_136_array(tiles: List[str]) -> List[int]:
     result = TilesConverter.string_to_136_array(
         man=man, pin=pin, sou=sou, honors=honors
     )
-    logger.debug(f"Converted to 136 array: {result}")
     return result
 
 
@@ -58,7 +56,6 @@ def convert_melds_to_mahjong_format(
     Returns:
         List[Meld]: Mahjongライブラリの形式の鳴き情報
     """
-    logger.debug(f"Converting melds to mahjong format: {melds}")
     result = []
     for meld in melds:
         if not isinstance(meld, MeldInfo):
@@ -71,7 +68,6 @@ def convert_melds_to_mahjong_format(
         # カンの場合はis_openを使用、それ以外は常にTrue
         is_open = meld.is_open if meld_type == Meld.KAN else True
         result.append(Meld(meld_type=meld_type, tiles=tiles, opened=is_open))
-    logger.debug(f"Converted melds: {result}")
     return result
 
 
@@ -179,7 +175,10 @@ def calculate_score(hand: Hand) -> ScoreResponse:
         )
 
     except Exception as e:
-        logger.error(f"Error during score calculation: {str(e)}", exc_info=True)
+        logger.error(
+            f"Error during score calculation: {str(e)}, result: {result if result else 'None'}",
+            exc_info=True,
+        )
         raise ScoreCalculationError(f"Error during score calculation: {str(e)}") from e
 
 

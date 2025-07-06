@@ -62,7 +62,7 @@ class MahjongMultiAgentsEvaluator:
         try:
             hand_data = json.loads(result)
         except Exception as e:
-            raise JSONParseError(f"Error parsing JSON: {e!s}") from e
+            raise JSONParseError(f"Error parsing JSON: {e!s}, result: {result}") from e
 
         return Hand(**hand_data)
 

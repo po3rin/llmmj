@@ -1,139 +1,139 @@
 [
     {
-        "query": "答えが1飜50符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 1 han 50 fu",
         "answer": {
             "fu": 50,
             "han": 1
         }
     },
     {
-        "query": "答えが2飜20符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 2 han 20 fu",
         "answer": {
             "fu": 20,
             "han": 2
         }
     },
     {
-        "query": "答えが4飜20符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 4 han 20 fu",
         "answer": {
             "fu": 20,
             "han": 4
         }
     },
     {
-        "query": "答えが2飜70符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 2 han 70 fu",
         "answer": {
             "fu": 70,
             "han": 2
         }
     },
     {
-        "query": "答えが2飜25符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 2 han 25 fu",
         "answer": {
             "fu": 25,
             "han": 2
         }
     },
     {
-        "query": "答えが4飜70符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 4 han 70 fu",
         "answer": {
             "fu": 70,
             "han": 3
         }
     },
     {
-        "query": "答えが3飜20符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 3 han 20 fu",
         "answer": {
             "fu": 20,
             "han": 3
         }
     },
     {
-        "query": "答えが1飜40符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 1 han 40 fu",
         "answer": {
             "fu": 40,
             "han": 1
         }
     },
     {
-        "query": "答えが3飜20符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 3 han 20 fu",
         "answer": {
             "fu": 20,
             "han": 3
         }
     },
     {
-        "query": "答えが1飜60符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 1 han 60 fu",
         "answer": {
             "fu": 60,
             "han": 1
         }
     },
     {
-        "query": "答えが3飜25符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 3 han 25 fu",
         "answer": {
             "fu": 25,
             "han": 3
         }
     },
     {
-        "query": "答えが4飜50符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 4 han 50 fu",
         "answer": {
             "fu": 50,
             "han": 4
         }
     },
     {
-        "query": "答えが1飜70符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 1 han 70 fu",
         "answer": {
             "fu": 70,
             "han": 1
         }
     },
     {
-        "query": "答えが2飜40符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 2 han 40 fu",
         "answer": {
             "fu": 40,
             "han": 2
         }
     },
     {
-        "query": "答えが4飜70符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 4 han 70 fu",
         "answer": {
             "fu": 70,
             "han": 4
         }
     },
     {
-        "query": "答えが2飜60符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 2 han 60 fu",
         "answer": {
             "fu": 60,
             "han": 2
         }
     },
     {
-        "query": "答えが1飜40符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 1 han 40 fu",
         "answer": {
             "fu": 40,
             "han": 1
         }
     },
     {
-        "query": "答えが2飜60符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 2 han 60 fu",
         "answer": {
             "fu": 60,
             "han": 2
         }
     },
     {
-        "query": "答えが3飜40符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 3 han 40 fu",
         "answer": {
             "fu": 40,
             "han": 3
         }
     },
     {
-        "query": "答えが1飜30符になる麻雀点数計算問題を作ってください",
+        "query": "Please create a mahjong scoring calculation problem with an answer of 1 han 30 fu",
         "answer": {
             "fu": 30,
             "han": 1

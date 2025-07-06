@@ -33,7 +33,7 @@ required_json_format_str = """
     - tiles: list[str]: Array in 136 format representing the winning hand. Important: Must include all tiles in the hand, including those specified in melds. Example: For a hand with 10 tiles + 4 ankan tiles + 1 winning tile, specify all 15 tiles like tiles=['1m', '2m', '3m', '4m', '4m', '5p', '5p', '5p', '7p', '8p', '1z', '1z', '1z', '1z', '1s'].
     - melds: list[MeldInfo]: Meld information. MeldInfo format only: [{{"tiles": ["1z", "1z", "1z", "1z"], "is_open": false}}]
         - tiles: Meld tiles (136 format). These tiles must also be included in the tiles field.
-        - is_open: true=open meld (minkan, pon, chi), false=closed meld (ankan)
+        - is_open: true=open meld (minkan, pon, chii), false=closed meld (ankan only). Note: Pon and Chii are always true
     - win_tile (str): The winning tile
     - dora_indicators (list[str]): Dora indicator tiles
     - is_riichi (bool): Whether riichi is declared. Cannot declare riichi after calling melds, so must be False if melds is not None.

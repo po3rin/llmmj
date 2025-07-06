@@ -4,6 +4,7 @@ from langchain.agents import AgentExecutor, create_react_agent
 from langchain.hub import pull
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
+from pydantic import ValidationError
 
 from entity.entity import Hand
 from exceptions import AgentSetupError, JSONParseError
@@ -78,12 +79,30 @@ class MahjongQuestionGenerator:
         )
 
         chain = prompt | self.model | self.parser
-        return chain.invoke({"query": query})
+        try:
+            return chain.invoke({"query": query})
+        except ValidationError as e:
+            raise JSONParseError(
+                f"Failed to parse simple generation output as JSON(input): {e!s}"
+            )
 
     def _generate_question_with_mcp(self, query: str) -> Dict[str, Any]:
         # Use agent to generate and verify
-        result = self.agent_executor.invoke({"input": query})
         try:
-            return self.parser.parse(result["output"])
-        except Exception as e:
-            raise JSONParseError(f"Failed to parse agent output as JSON: {e!s}")
+            result = self.agent_executor.invoke({"input": query})
+            # Strip markdown formatting before parsing
+            output = result["output"]
+            if isinstance(output, str):
+                # Remove markdown code blocks
+                output = (
+                    output.replace("```json\n", "")
+                    .replace("\n```", "")
+                    .replace("```json", "")
+                    .replace("```", "")
+                )
+                output = output.strip()
+            return self.parser.parse(output)
+        except ValidationError as e:
+            raise JSONParseError(
+                f"Failed to parse agent output as JSON: {e!s}, result: {result}"
+            )

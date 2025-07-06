@@ -11,7 +11,6 @@ async def create_session(
     app_name: str, user_id: str, session_id: str
 ) -> InMemorySessionService:
     session_service_stateful = InMemorySessionService()
-    print("✅ New InMemorySessionService created for state demonstration.")
 
     # Define initial state data - user prefers Celsius initially
     initial_state = {}

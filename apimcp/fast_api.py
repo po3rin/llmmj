@@ -48,10 +48,11 @@ async def calculate(request: ScoreRequest) -> ScoreResponse:
 
     # エラーがある場合は400エラーを返す
     if result.error:
-        logger.error(f"Error during score calculation: {result.error}")
+        logger.error(
+            f"Error during score calculation: {result.error}, result: {result}"
+        )
         raise HTTPException(status_code=400, detail=result.error)
 
-    logger.info(f"Score calculation result: {result}")
     return result
 
 
@@ -63,5 +64,4 @@ async def health_check() -> Dict[str, str]:
     Returns:
         Dict[str, str]: サーバーの状態
     """
-    logger.info("Health check requested")
     return {"status": "ok"}

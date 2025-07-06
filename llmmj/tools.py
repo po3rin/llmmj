@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from entity.entity import Hand, MeldInfo, ScoreRequest
+from entity.entity import Hand, MeldInfo
 from llmmj.llmmj import calculate_score, validate_hand
 
 
@@ -104,7 +104,6 @@ class CalculateMahjongScoreTool(BaseTool):
     name: str = "calculate_mahjong_score"
     description: str = (
         "Calculate mahjong score. Computes han, fu, and points from hand tiles, "
-        "winning tile, melds, dora, and other information, and returns detailed yaku information."
     )
     args_schema: type[BaseModel] = MahjongScoreInput
 
@@ -149,8 +148,7 @@ class CalculateMahjongScoreTool(BaseTool):
             )
 
             # Calculate score
-            request = ScoreRequest(hand=hand)
-            result = calculate_score(request)
+            result = calculate_score(hand)
 
             print(f"tools result: {result}")
 

@@ -52,7 +52,6 @@ mahjong_score_question_generator_agent = Agent(
     """,
     output_key="candidate_mahjong_score_calculation_problem",
 )
-print(f"✅ Agent '{mahjong_score_question_generator_agent.name}' redefined.")
 
 
 mahjong_score_question_checker_agent = Agent(
@@ -73,7 +72,6 @@ mahjong_score_question_checker_agent = Agent(
     tools=[calculate_mahjong_score],
     output_key="problem_check_result",
 )
-print(f"✅ Agent '{mahjong_score_question_checker_agent.name}' redefined.")
 
 
 mahjong_score_question_generation_supervisor_agent = Agent(
@@ -101,9 +99,6 @@ mahjong_score_question_generation_supervisor_agent = Agent(
         mahjong_score_question_checker_agent,
     ],
     output_key="last_final_score_calculation_problem",
-)
-print(
-    f"✅ Root Agent '{mahjong_score_question_generation_supervisor_agent.name}' created using stateful tool and output_key."
 )
 
 
@@ -148,7 +143,6 @@ final_output_json_generator_agent = Agent(
     tools=[final_output_message_check],
     output_key="last_final_output_message",
 )
-print(f"✅ Agent '{final_output_json_generator_agent.name}' redefined.")
 
 
 mahjong_sequential_agent = SequentialAgent(

@@ -30,8 +30,7 @@ class MahjongEvaluator:
         for d in dataset:
             try:
                 result = self.generator.generate_question(d["query"])
-            except AgentSetupError as e:
-                logger.error(f"Error setting up agent: {e!s}")
+            except AgentSetupError:
                 raise
             except JSONParseError as e:
                 eval_result = create_error_result(
@@ -43,7 +42,6 @@ class MahjongEvaluator:
                 eval_results.append(eval_result)
                 continue
             except Exception as e:
-                logger.error(f"Error generating question: {e}")
                 eval_result = create_error_result(
                     model_name=self.model_name,
                     error=e,

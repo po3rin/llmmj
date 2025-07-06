@@ -5,6 +5,7 @@ A "dora indicator tile" is a tile that **indicates what the dora tile is for tha
 #### What is Dora?
 *   "Dora" is a special tile that **increases the winning points by 1 for each dora tile held** when you win.
 *   However, dora itself is not a yaku, so you cannot win just by holding dora tiles.
+*   **Important**: You cannot win with dora alone. You must have at least one other yaku (such as riichi, tanyao, yakuhai, etc.) to win. Dora only increases han count when you have other valid yaku.
 *   There are also types like "uradora" (underneath dora) and "kandora" (kan dora).
 
 #### How Dora is Determined
@@ -55,6 +56,7 @@ Fu calculation involves adding the following 4 elements, then rounding up to the
     *   Pairs of terminals (1, 9) and non-value wind tiles (winds that are neither round wind nor seat wind) are also **0 fu**.
     *   Pairs of dragon tiles (White, Green, Red) or value wind tiles (round wind or seat wind) are **2 fu**.
     *   Pairs of double wind tiles (when round wind and seat wind are the same) are **4 fu**.
+    *   **Important**: Honor tile pairs (dragon/wind tiles) only provide fu points, not yaku. Yakuhai yaku requires triplets or quadruplets of honor tiles, not pairs.
 
 *   **Fu for tenpai (waiting pattern)**:
     *   Kantsu (gap) wait is **2 fu**.
