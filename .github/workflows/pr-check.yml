@@ -1,0 +1,98 @@
+name: PR Check
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  quick-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+
+    - name: Set up Python 3.12
+      run: uv python install 3.12
+
+    - name: Install dependencies
+      run: uv sync --dev
+
+    - name: Run linting
+      run: |
+        uv run ruff check .
+        uv run ruff format --check .
+
+    - name: Check imports
+      run: |
+        uv run python -c "from generator.generator import MahjongQuestionGenerator; print('✓ Generator import successful')"
+        uv run python -c "from evaluator.evaluator import MahjongEvaluator; print('✓ Evaluator import successful')"
+        uv run python -c "from evaluator.libs import hand_2_result; print('✓ Evaluator libs import successful')"
+
+    - name: Run syntax check
+      run: |
+        uv run python -m py_compile generator/generator.py
+        uv run python -m py_compile evaluator/evaluator.py
+        uv run python -m py_compile evaluator/libs.py
+        uv run python -m py_compile evaluator/agents_evaluator.py
+        uv run python -m py_compile tests/test_generator.py
+        uv run python -m py_compile tests/test_evaluator.py
+        uv run python -m py_compile tests/test_evaluator_libs.py
+        uv run python -m py_compile tests/test_agents_evaluator.py
+
+    - name: Run fast tests
+      run: |
+        uv run python -m pytest tests/test_generator.py::TestMahjongQuestionGenerator::test_init_simple_mode -v
+        uv run python -m pytest tests/test_evaluator.py::TestMahjongEvaluator::test_init -v
+
+  changed-files:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v42
+      with:
+        files: |
+          generator/**/*.py
+          evaluator/**/*.py
+          tests/**/*.py
+          pyproject.toml
+
+    - name: Install uv (if files changed)
+      if: steps.changed-files.outputs.any_changed == 'true'
+      uses: astral-sh/setup-uv@v3
+
+    - name: Set up Python 3.12 (if files changed)
+      if: steps.changed-files.outputs.any_changed == 'true'
+      run: uv python install 3.12
+
+    - name: Install dependencies (if files changed)
+      if: steps.changed-files.outputs.any_changed == 'true'
+      run: uv sync --dev
+
+    - name: Run targeted tests
+      if: steps.changed-files.outputs.any_changed == 'true'
+      run: |
+        if echo "${{ steps.changed-files.outputs.all_changed_files }}" | grep -q "generator/"; then
+          echo "🧪 Running generator tests..."
+          uv run python tests/run_tests.py generator
+        fi
+        if echo "${{ steps.changed-files.outputs.all_changed_files }}" | grep -q "evaluator/"; then
+          echo "🧪 Running evaluator tests..."
+          uv run python tests/run_tests.py evaluator
+        fi
+        if echo "${{ steps.changed-files.outputs.all_changed_files }}" | grep -q "tests/"; then
+          echo "🧪 Running all tests due to test file changes..."
+          uv run python tests/run_tests.py
+        fi
+
+    - name: No changes detected
+      if: steps.changed-files.outputs.any_changed == 'false'
+      run: echo "ℹ️ No relevant files changed, skipping tests"

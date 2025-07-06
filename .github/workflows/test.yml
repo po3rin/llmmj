@@ -1,0 +1,106 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      run: uv python install ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: uv sync --dev
+
+    - name: Show environment info
+      run: |
+        uv --version
+        uv run python --version
+        uv run python -c "import sys; print(f'Python executable: {sys.executable}')"
+        uv run python -c "import platform; print(f'Platform: {platform.platform()}')"
+
+    - name: Run linting
+      run: |
+        uv run ruff check .
+        uv run ruff format --check .
+
+    - name: Run tests
+      run: uv run python -m pytest
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  test-generator:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+
+    - name: Set up Python 3.12
+      run: uv python install 3.12
+
+    - name: Install dependencies
+      run: uv sync --dev
+
+    - name: Run generator tests
+      run: uv run python tests/run_tests.py generator
+
+  test-evaluator:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+
+    - name: Set up Python 3.12
+      run: uv python install 3.12
+
+    - name: Install dependencies
+      run: uv sync --dev
+
+    - name: Run evaluator tests
+      run: uv run python tests/run_tests.py evaluator
+
+  test-integration:
+    runs-on: ubuntu-latest
+    needs: [test, test-generator, test-evaluator]
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+
+    - name: Set up Python 3.12
+      run: uv python install 3.12
+
+    - name: Install dependencies
+      run: uv sync --dev
+
+    - name: Run all tests
+      run: uv run python tests/run_tests.py
+
+    - name: Test import
+      run: |
+        uv run python -c "from generator.generator import MahjongQuestionGenerator; print('Generator import successful')"
+        uv run python -c "from evaluator.evaluator import MahjongEvaluator; print('Evaluator import successful')"
