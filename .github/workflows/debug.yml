@@ -1,0 +1,53 @@
+name: Debug Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ debug-** ]
+
+jobs:
+  basic-debug:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+
+    - name: Set up Python 3.12
+      run: uv python install 3.12
+
+    - name: Install dependencies
+      run: uv sync --dev --verbose
+
+    - name: Test basic Python functionality
+      run: |
+        echo "=== Testing basic Python functionality ==="
+        uv run python --version
+        uv run python -c "print('Hello from Python!')"
+        
+    - name: Test project structure
+      run: |
+        echo "=== Project structure ==="
+        ls -la
+        find . -name "*.py" | head -10
+        
+    - name: Test basic imports
+      run: |
+        echo "=== Testing basic imports ==="
+        uv run python -c "import sys; sys.path.insert(0, '.'); import entity; print('entity imported')"
+        uv run python -c "import sys; sys.path.insert(0, '.'); from entity.entity import Hand; print('Hand imported')"
+        
+    - name: Test pytest basic functionality
+      run: |
+        echo "=== Testing pytest basic functionality ==="
+        echo "def test_basic(): assert 1 + 1 == 2" > simple_test.py
+        uv run pytest simple_test.py -v
+        
+    - name: Test project imports step by step
+      run: |
+        echo "=== Testing project imports step by step ==="
+        uv run python -c "import sys; sys.path.insert(0, '.'); from entity.entity import Hand; print('Hand class imported')"
+        uv run python -c "import sys; sys.path.insert(0, '.'); from exceptions import AgentSetupError; print('AgentSetupError imported')"
+        uv run python -c "import sys; sys.path.insert(0, '.'); from generator.generator import MahjongQuestionGenerator; print('MahjongQuestionGenerator imported')"

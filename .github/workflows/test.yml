@@ -7,109 +7,81 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  debug-setup:
+  test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+
     steps:
     - uses: actions/checkout@v4
 
     - name: Install uv
       uses: astral-sh/setup-uv@v3
 
-    - name: Set up Python 3.12
-      run: uv python install 3.12
-
-    - name: Debug - Show Python and UV info
-      run: |
-        echo "=== UV Info ==="
-        uv --version
-        echo "=== Python Info ==="
-        uv run python --version
-        uv run python -c "import sys; print(f'Python executable: {sys.executable}')"
-        uv run python -c "import sys; print(f'Python path: {sys.path}')"
-        echo "=== Working Directory ==="
-        pwd
-        ls -la
-        echo "=== Project Structure ==="
-        find . -name "*.py" | head -20
+    - name: Set up Python ${{ matrix.python-version }}
+      run: uv python install ${{ matrix.python-version }}
 
     - name: Install dependencies
+      run: uv sync --dev
+
+    - name: Show environment info
       run: |
-        echo "=== Installing dependencies ==="
-        uv sync --dev --verbose
-        echo "=== Installed packages ==="
+        uv --version
+        uv run python --version
         uv pip list
 
-    - name: Test imports without tests
+    - name: Debug environment
       run: |
-        echo "=== Testing basic imports ==="
-        export PYTHONPATH="${PYTHONPATH}:$(pwd)"
-        uv run python -c "
-        import sys
-        print('Python path:', sys.path)
-        print('Current working directory:', __import__('os').getcwd())
-        "
-        
-        echo "=== Testing specific imports ==="
-        export PYTHONPATH="${PYTHONPATH}:$(pwd)"
-        uv run python -c "
-        try:
-            from entity.entity import Hand
-            print('✓ entity.entity import successful')
-        except Exception as e:
-            print('✗ entity.entity import failed:', e)
-        "
-        
-        uv run python -c "
-        try:
-            from exceptions.exceptions import AgentSetupError
-            print('✓ exceptions import successful')
-        except Exception as e:
-            print('✗ exceptions import failed:', e)
-        "
+        echo "Working directory: $(pwd)"
+        echo "Python path:"
+        uv run python -c "import sys; [print(f'  {p}') for p in sys.path]"
+        echo "Project structure:"
+        find . -name "*.py" -type f | head -20
+        echo "Can import basic modules?"
+        uv run python -c "import sys, os; print('Basic imports work')"
 
-  basic-test:
-    runs-on: ubuntu-latest
-    needs: debug-setup
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@v3
-
-    - name: Set up Python 3.12
-      run: uv python install 3.12
-
-    - name: Install dependencies
-      run: uv sync --dev
-
-    - name: Test basic functionality
+    - name: Test imports
       run: |
-        export PYTHONPATH="${PYTHONPATH}:$(pwd)"
-        echo "=== Testing generator import ==="
+        echo "Testing imports..."
         uv run python -c "
         try:
-            from generator.generator import MahjongQuestionGenerator
-            print('✓ Generator import successful')
+            import entity.entity
+            print('✓ entity.entity import works')
         except Exception as e:
-            print('✗ Generator import failed:', e)
+            print(f'✗ entity.entity import failed: {e}')
             import traceback
             traceback.print_exc()
         "
         
-        echo "=== Testing evaluator import ==="
         uv run python -c "
         try:
-            from evaluator.evaluator import MahjongEvaluator
-            print('✓ Evaluator import successful')
+            import exceptions.exceptions
+            print('✓ exceptions.exceptions import works')
         except Exception as e:
-            print('✗ Evaluator import failed:', e)
+            print(f'✗ exceptions.exceptions import failed: {e}')
             import traceback
             traceback.print_exc()
         "
 
-  syntax-check:
+    - name: Run linting
+      run: |
+        uv run ruff check .
+        uv run ruff format --check .
+
+    - name: Run tests
+      run: uv run pytest -v
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  test-generator:
     runs-on: ubuntu-latest
-    needs: debug-setup
     steps:
     - uses: actions/checkout@v4
 
@@ -122,29 +94,11 @@ jobs:
     - name: Install dependencies
       run: uv sync --dev
 
-    - name: Check syntax of all Python files
-      run: |
-        echo "=== Checking syntax ==="
-        export PYTHONPATH="${PYTHONPATH}:$(pwd)"
-        
-        # Check main modules
-        uv run python -m py_compile generator/generator.py
-        uv run python -m py_compile evaluator/evaluator.py
-        uv run python -m py_compile evaluator/libs.py
-        uv run python -m py_compile entity/entity.py
-        uv run python -m py_compile exceptions/exceptions.py
-        
-        # Check test files
-        uv run python -m py_compile tests/test_generator.py
-        uv run python -m py_compile tests/test_evaluator.py
-        uv run python -m py_compile tests/test_evaluator_libs.py
-        uv run python -m py_compile tests/run_tests.py
-        
-        echo "✓ All syntax checks passed"
+    - name: Run generator tests
+      run: uv run python tests/run_tests.py generator
 
-  simple-test:
+  test-evaluator:
     runs-on: ubuntu-latest
-    needs: [debug-setup, basic-test, syntax-check]
     steps:
     - uses: actions/checkout@v4
 
@@ -157,8 +111,28 @@ jobs:
     - name: Install dependencies
       run: uv sync --dev
 
-    - name: Run simple test
+    - name: Run evaluator tests
+      run: uv run python tests/run_tests.py evaluator
+
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: [test, test-generator, test-evaluator]
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+
+    - name: Set up Python 3.12
+      run: uv python install 3.12
+
+    - name: Install dependencies
+      run: uv sync --dev
+
+    - name: Run all tests together
+      run: uv run python tests/run_tests.py
+
+    - name: Test imports
       run: |
-        export PYTHONPATH="${PYTHONPATH}:$(pwd)"
-        echo "=== Running one simple test ==="
-        uv run python -m pytest tests/test_generator.py::TestMahjongQuestionGenerator::test_init_simple_mode -v -s
+        uv run python -c "from generator.generator import MahjongQuestionGenerator; print('Generator import successful')"
+        uv run python -c "from evaluator.evaluator import MahjongEvaluator; print('Evaluator import successful')"
