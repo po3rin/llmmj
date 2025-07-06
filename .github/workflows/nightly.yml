@@ -6,6 +6,11 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch:  # Allow manual triggering
 
+env:
+  PYTHONPATH: .
+  UV_CACHE_DIR: /tmp/.uv-cache
+  RUFF_CACHE_DIR: /tmp/.ruff-cache
+
 jobs:
   comprehensive-test:
     runs-on: ubuntu-latest

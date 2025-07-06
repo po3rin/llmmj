@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+env:
+  # ローカルとの設定統一
+  UV_CACHE_DIR: /tmp/.uv-cache
+  PYTHONPATH: .
+  RUFF_CACHE_DIR: /tmp/.ruff-cache
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -18,6 +24,8 @@ jobs:
 
     - name: Install uv
       uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
 
     - name: Set up Python ${{ matrix.python-version }}
       run: uv python install ${{ matrix.python-version }}
@@ -27,23 +35,28 @@ jobs:
 
     - name: Show environment info
       run: |
+        echo "=== Environment Info ==="
         uv --version
         uv run python --version
-        uv pip list
+        echo "Working directory: $(pwd)"
+        echo "PYTHONPATH: $PYTHONPATH"
+        echo "UV version and config:"
+        uv pip list | grep -E "(ruff|pytest)"
 
     - name: Debug environment
       run: |
-        echo "Working directory: $(pwd)"
+        echo "=== Debug Info ==="
         echo "Python path:"
         uv run python -c "import sys; [print(f'  {p}') for p in sys.path]"
         echo "Project structure:"
-        find . -name "*.py" -type f | head -20
-        echo "Can import basic modules?"
-        uv run python -c "import sys, os; print('Basic imports work')"
+        find . -name "*.py" -type f | head -10
+        echo "Ruff config test:"
+        uv run ruff --version
+        uv run ruff config
 
     - name: Test imports
       run: |
-        echo "Testing imports..."
+        echo "=== Testing imports ==="
         uv run python -c "
         try:
             import entity.entity
@@ -66,11 +79,15 @@ jobs:
 
     - name: Run linting
       run: |
-        uv run ruff check .
+        echo "=== Running Ruff linting ==="
+        uv run ruff check . --output-format=github
+        echo "=== Running Ruff format check ==="
         uv run ruff format --check .
 
     - name: Run tests
-      run: uv run pytest -v
+      run: |
+        echo "=== Running pytest ==="
+        uv run pytest -v
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
@@ -82,6 +99,8 @@ jobs:
 
   test-generator:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: .
     steps:
     - uses: actions/checkout@v4
 
@@ -99,6 +118,8 @@ jobs:
 
   test-evaluator:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: .
     steps:
     - uses: actions/checkout@v4
 
@@ -117,6 +138,8 @@ jobs:
   integration-test:
     runs-on: ubuntu-latest
     needs: [test, test-generator, test-evaluator]
+    env:
+      PYTHONPATH: .
     steps:
     - uses: actions/checkout@v4
 

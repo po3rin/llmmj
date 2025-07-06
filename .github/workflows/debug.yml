@@ -5,6 +5,11 @@ on:
   push:
     branches: [ debug-** ]
 
+env:
+  PYTHONPATH: .
+  UV_CACHE_DIR: /tmp/.uv-cache
+  RUFF_CACHE_DIR: /tmp/.ruff-cache
+
 jobs:
   basic-debug:
     runs-on: ubuntu-latest
