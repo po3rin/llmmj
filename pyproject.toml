@@ -48,12 +48,6 @@ python_functions = ["test_*"]
 pythonpath = ["."]
 addopts = [
     "-v",
-    "--strict-markers",
-    "--strict-config",
-    "--cov=.",
-    "--cov-report=term-missing",
-    "--cov-report=html",
-    "--cov-report=xml",
     "--tb=short",
 ]
 markers = [

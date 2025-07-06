@@ -22,9 +22,52 @@ jobs:
     - name: Set up Python
       run: uv python install 3.12
 
-    - name: Install dependencies
-      run: uv sync
+    - name: Show environment
+      run: |
+        echo "=== Environment Info ==="
+        uv --version
+        uv run python --version
+        echo "Working directory: $(pwd)"
+        echo "PYTHONPATH: $PYTHONPATH"
+        ls -la pyproject.toml uv.lock
 
-    - name: Run tests
-      run: uv run pytest
+    - name: Install dependencies
+      run: |
+        echo "=== Installing dependencies ==="
+        uv sync --verbose
+        echo "=== Checking installed packages ==="
+        uv pip list | head -20
+        echo "=== Checking key packages ==="
+        uv pip list | grep -E "(pytest|pydantic|langchain)" || echo "Some packages not found"
+
+    - name: Verify imports
+      run: |
+        echo "=== Verifying imports ==="
+        uv run python -c "
+        import sys
+        print('Python path:', sys.path[:3])
+        sys.path.insert(0, '.')
+        try:
+            import exceptions.exceptions
+            print('✓ exceptions.exceptions')
+        except Exception as e:
+            print(f'✗ exceptions.exceptions: {e}')
+            exit(1)
+        try:
+            import entity.entity
+            print('✓ entity.entity')
+        except Exception as e:
+            print(f'✗ entity.entity: {e}')
+            exit(1)
+        "
+
+    - name: Run basic test first
+      run: |
+        echo "=== Running basic test ==="
+        uv run python -m pytest tests/test_basic.py -v
+
+    - name: Run all tests
+      run: |
+        echo "=== Running all tests ==="
+        uv run pytest tests/ -v
 
