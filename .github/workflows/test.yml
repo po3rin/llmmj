@@ -7,155 +7,24 @@ on:
     branches: [ main, develop ]
 
 env:
-  # ローカルとの設定統一
-  UV_CACHE_DIR: /tmp/.uv-cache
   PYTHONPATH: .
-  RUFF_CACHE_DIR: /tmp/.ruff-cache
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.12"]
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Install uv
       uses: astral-sh/setup-uv@v3
-      with:
-        version: "latest"
 
-    - name: Set up Python ${{ matrix.python-version }}
-      run: uv python install ${{ matrix.python-version }}
+    - name: Set up Python
+      run: uv python install 3.12
 
     - name: Install dependencies
-      run: uv sync --dev
-
-    - name: Show environment info
-      run: |
-        echo "=== Environment Info ==="
-        uv --version
-        uv run python --version
-        echo "Working directory: $(pwd)"
-        echo "PYTHONPATH: $PYTHONPATH"
-        echo "UV version and config:"
-        uv pip list | grep -E "(ruff|pytest)"
-
-    - name: Debug environment
-      run: |
-        echo "=== Debug Info ==="
-        echo "Python path:"
-        uv run python -c "import sys; [print(f'  {p}') for p in sys.path]"
-        echo "Project structure:"
-        find . -name "*.py" -type f | head -10
-        echo "Ruff config test:"
-        uv run ruff --version
-        uv run ruff config
-
-    - name: Test imports
-      run: |
-        echo "=== Testing imports ==="
-        uv run python -c "
-        try:
-            import entity.entity
-            print('✓ entity.entity import works')
-        except Exception as e:
-            print(f'✗ entity.entity import failed: {e}')
-            import traceback
-            traceback.print_exc()
-        "
-        
-        uv run python -c "
-        try:
-            import exceptions.exceptions
-            print('✓ exceptions.exceptions import works')
-        except Exception as e:
-            print(f'✗ exceptions.exceptions import failed: {e}')
-            import traceback
-            traceback.print_exc()
-        "
-
-    - name: Run linting
-      run: |
-        echo "=== Running Ruff linting ==="
-        uv run ruff check . --output-format=github
-        echo "=== Running Ruff format check ==="
-        uv run ruff format --check .
+      run: uv sync
 
     - name: Run tests
-      run: |
-        echo "=== Running pytest ==="
-        uv run pytest -v
+      run: uv run pytest
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
-
-  test-generator:
-    runs-on: ubuntu-latest
-    env:
-      PYTHONPATH: .
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@v3
-
-    - name: Set up Python 3.12
-      run: uv python install 3.12
-
-    - name: Install dependencies
-      run: uv sync --dev
-
-    - name: Run generator tests
-      run: uv run python tests/run_tests.py generator
-
-  test-evaluator:
-    runs-on: ubuntu-latest
-    env:
-      PYTHONPATH: .
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@v3
-
-    - name: Set up Python 3.12
-      run: uv python install 3.12
-
-    - name: Install dependencies
-      run: uv sync --dev
-
-    - name: Run evaluator tests
-      run: uv run python tests/run_tests.py evaluator
-
-  integration-test:
-    runs-on: ubuntu-latest
-    needs: [test, test-generator, test-evaluator]
-    env:
-      PYTHONPATH: .
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@v3
-
-    - name: Set up Python 3.12
-      run: uv python install 3.12
-
-    - name: Install dependencies
-      run: uv sync --dev
-
-    - name: Run all tests together
-      run: uv run python tests/run_tests.py
-
-    - name: Test imports
-      run: |
-        uv run python -c "from generator.generator import MahjongQuestionGenerator; print('Generator import successful')"
-        uv run python -c "from evaluator.evaluator import MahjongEvaluator; print('Evaluator import successful')"

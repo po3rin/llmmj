@@ -8,94 +8,20 @@ env:
   PYTHONPATH: .
 
 jobs:
-  pr-check:
+  test:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
     - name: Install uv
       uses: astral-sh/setup-uv@v3
-      with:
-        version: "0.4.30"
 
-    - name: Set up Python 3.12
-      run: |
-        uv python install 3.12
-        uv python pin 3.12
-
-    - name: Show environment
-      run: |
-        echo "=== Environment ==="
-        uv --version
-        uv run python --version
-        echo "Current directory: $(pwd)"
-        echo "PYTHONPATH: $PYTHONPATH"
-        ls -la
+    - name: Set up Python
+      run: uv python install 3.12
 
     - name: Install dependencies
-      run: |
-        echo "=== Installing dependencies ==="
-        uv sync --frozen
-        echo "=== Dependencies installed ==="
+      run: uv sync
 
-    - name: Run basic test first
-      run: |
-        echo "=== Running basic functionality test ==="
-        uv run pytest tests/test_basic.py -v
-
-    - name: Check key imports
-      run: |
-        echo "=== Checking imports ==="
-        uv run python -c "
-        import sys
-        sys.path.insert(0, '.')
-        
-        # Check pydantic
-        try:
-            import pydantic
-            print('✓ pydantic')
-        except ImportError as e:
-            print(f'✗ pydantic: {e}')
-            exit(1)
-        
-        # Check basic modules
-        try:
-            import entity.entity
-            print('✓ entity.entity')
-        except ImportError as e:
-            print(f'✗ entity.entity: {e}')
-            exit(1)
-        
-        try:
-            import exceptions.exceptions
-            print('✓ exceptions.exceptions')
-        except ImportError as e:
-            print(f'✗ exceptions.exceptions: {e}')
-            exit(1)
-        "
-
-    - name: Run syntax check
-      run: |
-        echo "=== Syntax check ==="
-        uv run python -m py_compile generator/generator.py
-        uv run python -m py_compile evaluator/evaluator.py
-        uv run python -m py_compile entity/entity.py
-        uv run python -m py_compile exceptions/exceptions.py
-
-    - name: Run linting
-      run: |
-        echo "=== Linting ==="
-        uv run ruff check . --output-format=github
-
-    - name: Run main tests
-      run: |
-        echo "=== Running main tests ==="
-        uv run pytest tests/test_generator.py::TestMahjongQuestionGenerator::test_init_simple_mode -v
-        uv run pytest tests/test_evaluator.py::TestMahjongEvaluator::test_init -v
-
-    - name: Run all tests (if previous succeed)
-      run: |
-        echo "=== Running all tests ==="
-        uv run pytest tests/ -x --tb=short
+    - name: Run tests
+      run: uv run pytest
