@@ -112,22 +112,18 @@ def calculate_score(hand: Hand) -> ScoreResponse:
         ScoreResponse: 点数計算結果
     """
     try:
-        logger.info(f"Calculating score for hand: {hand.tiles}")
         calculator = HandCalculator()
 
         # 鳴きの情報を変換
         mahjong_melds = (
             convert_melds_to_mahjong_format(hand.melds) if hand.melds else []
         )
-        logger.debug(f"Converted melds: {mahjong_melds}")
 
         # 手牌を136形式に変換（全ての牌を含める）
         tiles = convert_tiles_to_136_array(hand.tiles)
-        logger.debug(f"Converted tiles to 136 array: {tiles}")
 
         # 和了牌を変換
         win_tile = convert_tiles_to_136_array([hand.win_tile])[0]
-        logger.debug(f"Win tile: {win_tile}")
 
         # ドラ表示牌を変換
         dora_indicators = (
@@ -157,7 +153,6 @@ def calculate_score(hand: Hand) -> ScoreResponse:
             kyoutaku_number=hand.kyoutaku_number,
             tsumi_number=hand.tsumi_number,
         )
-        logger.debug(f"Hand config: {config.__dict__}")
 
         # 点数計算
         result = calculator.estimate_hand_value(
@@ -219,7 +214,6 @@ def validate_meld(tiles: List[str], melds: List[MeldInfo]) -> bool:
         bool: 正しい形式かどうか
     """
     try:
-        logger.debug(f"Validating melds: {melds}")
         # 各鳴きを検証
         for meld in melds:
             if not isinstance(meld, MeldInfo):

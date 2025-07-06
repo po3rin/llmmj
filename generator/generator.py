@@ -1,4 +1,3 @@
-import logging
 from typing import Any, Dict, Optional
 
 from langchain.agents import AgentExecutor, create_react_agent
@@ -7,13 +6,12 @@ from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 
 from entity.entity import Hand
+from exceptions import AgentSetupError, JSONParseError
 from llmmj.tools import CalculateMahjongScoreTool
 from prompts.prompts import (
     generate_question_prompt_template,
     generate_question_with_tools_prompt_template,
 )
-
-logger = logging.getLogger(__name__)
 
 
 class MahjongQuestionGenerator:
@@ -45,11 +43,7 @@ class MahjongQuestionGenerator:
         """Setup MCP-style tools using LangChain."""
         try:
             # Create tools
-            self.tools = [
-                CalculateMahjongScoreTool(),
-                # ValidateMahjongHandTool(),
-                # CheckWinningHandTool(),
-            ]
+            self.tools = [CalculateMahjongScoreTool()]
 
             # Create agent
             prompt = pull("hwchase17/react")
@@ -57,20 +51,14 @@ class MahjongQuestionGenerator:
             self.agent_executor = AgentExecutor(
                 agent=agent,
                 tools=self.tools,
-                verbose=True,
+                verbose=False,
                 handle_parsing_errors=True,
                 max_iterations=5,
                 early_stopping_method="generate",
             )
 
-            logger.info(
-                f"MCP-style tools setup completed. Available tools: {[tool.name for tool in self.tools]}"
-            )
-
         except Exception as e:
-            logger.error(f"Failed to setup MCP-style tools: {e}")
-            self.use_tools = False
-            self.query_template = generate_question_prompt_template
+            raise AgentSetupError(f"Failed to setup ReAct agent: {e!s}")
 
     def generate_question(self, query: str) -> Dict[str, Any]:
         """Generate a Mahjong question based on the query."""
@@ -90,58 +78,12 @@ class MahjongQuestionGenerator:
         )
 
         chain = prompt | self.model | self.parser
-        try:
-            return chain.invoke({"query": query})
-        except Exception as e:
-            logger.warning(f"Failed to parse simple generation output as JSON: {e}")
-            # Try to get raw output and format it
-            try:
-                simple_chain = prompt | self.model
-                raw_output = simple_chain.invoke({"query": query})
-
-                # Extract content from response
-                if hasattr(raw_output, "content"):
-                    raw_text = raw_output.content
-                else:
-                    raw_text = str(raw_output)
-
-                # Try to format as JSON
-                return self._format_output_as_json(raw_text)
-            except Exception as format_error:
-                logger.error(
-                    f"Failed to format simple generation output: {format_error}"
-                )
-                raise
+        return chain.invoke({"query": query})
 
     def _generate_question_with_mcp(self, query: str) -> Dict[str, Any]:
+        # Use agent to generate and verify
+        result = self.agent_executor.invoke({"input": query})
         try:
-            # Use agent to generate and verify
-            result = self.agent_executor.invoke({"input": query})
-
-            # Try to parse the output
-            output = result.get("output", "")
-            if isinstance(output, str):
-                try:
-                    # Try to extract JSON from the output
-                    import re
-
-                    # Look for JSON in the output
-                    json_match = re.search(r"\{.*\}", output, re.DOTALL)
-                    if json_match:
-                        json_str = json_match.group()
-                        return self.parser.parse(json_str)
-                    else:
-                        # Try to parse the whole output
-                        return self.parser.parse(output)
-
-                except Exception as parse_error:
-                    raise ValueError(
-                        f"Failed to parse agent output as JSON: {parse_error}"
-                    )
-            else:
-                raise ValueError(f"Failed to parse agent output as JSON: {output}")
-
+            return self.parser.parse(result["output"])
         except Exception as e:
-            logger.error(f"Failed to generate question with MCP: {e}")
-            # Fallback to simple generation
-            return self._generate_question_simple(query)
+            raise JSONParseError(f"Failed to parse agent output as JSON: {e!s}")

@@ -1,7 +1,7 @@
 import logging
 
-from google.genai import types
 from google.adk.runners import InMemorySessionService, Runner
+from google.genai import types
 
 from agents_loop.agent import mahjong_loop_agent
 from agents_seq.agent import mahjong_sequential_agent
@@ -23,6 +23,7 @@ async def create_session(
         session_id=session_id,
         state=initial_state,
     )
+    _ = session_stateful
 
     return session_service_stateful
 

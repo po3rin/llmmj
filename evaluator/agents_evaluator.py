@@ -12,10 +12,15 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import pandas as pd
 
 from entity.entity import Hand
+from evaluator.libs import (
+    create_error_result,
+    hand_2_result,
+    process_hand_generation,
+    result_to_df,
+)
 from evaluator.result import EvalResult
-from llmmj.llmmj import calculate_score, validate_hand
+from exceptions import AgentSetupError, JSONParseError
 from runner.runner import get_loop_runner, get_sequential_runner, run
-from exceptions import AgentSetupError, JSONParseError, HandValidationError, ScoreCalculationError
 
 logger = logging.getLogger(__name__)
 
@@ -61,61 +66,6 @@ class MahjongMultiAgentsEvaluator:
 
         return Hand(**hand_data)
 
-
-    def _hand_2_result(self, hand: Hand, data: Dict[str, Any]) -> EvalResult:
-        # 点数計算
-        try:
-            result = calculate_score(hand)
-            if (
-                result.fu == data["answer"]["fu"]
-                and result.han == data["answer"]["han"]
-            ):
-                return EvalResult(
-                    model=self.model_name,
-                    correct=True,
-                    is_error=False,
-                    reason="Correct",
-                    hand=hand,
-                    got_answer_han=result.han,
-                    got_answer_fu=result.fu,
-                    expected_han=data["answer"]["han"],
-                    expected_fu=data["answer"]["fu"],
-                )
-            else:
-                return EvalResult(
-                    model=self.model_name,
-                    correct=False,
-                    is_error=False,
-                    reason="Incorrect got",
-                    hand=hand,
-                    got_answer_han=result.han,
-                    got_answer_fu=result.fu,
-                    expected_han=data["answer"]["han"],
-                    expected_fu=data["answer"]["fu"],
-                )
-        except ScoreCalculationError as e:
-            return EvalResult(
-                model=self.model_name,
-                correct=False,
-                is_error=True,
-                reason=f"Error calculating score: {e!s}",
-                error_type=ScoreCalculationError.__name__,
-                hand=hand,
-                expected_han=data["answer"]["han"],
-                expected_fu=data["answer"]["fu"],
-            )
-        except Exception as e:
-            return EvalResult(
-                model=self.model_name,
-                correct=False,
-                is_error=True,
-                error_type="UnknownError",
-                reason=f"Error calculating score: {e!s}",
-                hand=hand,
-                expected_han=data["answer"]["han"],
-                expected_fu=data["answer"]["fu"],
-            )
-
     async def evals_async(self, dataset: List[Dict[str, Any]]) -> pd.DataFrame:
         """Asynchronous evaluation of dataset."""
         eval_results: List[EvalResult] = []
@@ -131,52 +81,35 @@ class MahjongMultiAgentsEvaluator:
                 logger.error(f"Error setting up agent: {e!s}")
                 raise
             except JSONParseError as e:
-                eval_result = EvalResult(
-                    model=self.model_name,
-                    correct=False,
-                    is_error=True,
+                eval_result = create_error_result(
+                    model_name=self.model_name,
+                    error=e,
                     error_type=JSONParseError.__name__,
-                    reason=f"Error parsing JSON: {e!s}",
-                    hand=Hand(tiles=[], win_tile=""),
+                    data=d,
                 )
                 eval_results.append(eval_result)
                 continue
             except Exception as e:
-                # Create an error result instead of raising the exception
-                eval_result = EvalResult(
-                    model=self.model_name,
-                    correct=False,
-                    is_error=True,
+                eval_result = create_error_result(
+                    model_name=self.model_name,
+                    error=e,
                     error_type="UnknownError",
-                    reason=f"Error generating question: {str(e)}",
-                    hand=Hand(tiles=[], win_tile=""),
-                    expected_han=d["answer"]["han"],
-                    expected_fu=d["answer"]["fu"],
-                )
-                eval_results.append(eval_result)
-                continue
-            
-            try:
-                validate_hand(hand)
-            except HandValidationError as e:
-                logger.error(f"Error validating hand: {e!s}")
-                eval_result = EvalResult(
-                    model=self.model_name,
-                    correct=False,
-                    is_error=True,
-                    error_type=HandValidationError.__name__,
-                    reason=f"Error validating hand: {e!s}",
-                    hand=hand,
-                    expected_han=d["answer"]["han"],
-                    expected_fu=d["answer"]["fu"],
+                    data=d,
                 )
                 eval_results.append(eval_result)
                 continue
 
-            eval_result = self._hand_2_result(hand, d)
+            # Process and validate the hand
+            hand_or_error = process_hand_generation(hand, d, self.model_name)
+            if isinstance(hand_or_error, EvalResult):
+                eval_results.append(hand_or_error)
+                continue
+
+            # Calculate score and create result
+            eval_result = hand_2_result(hand_or_error, d, self.model_name)
             eval_results.append(eval_result)
 
-        return self.result_to_df(eval_results)
+        return result_to_df(eval_results)
 
     def evals(self, dataset: List[Dict[str, Any]]) -> pd.DataFrame:
         """Synchronous wrapper for evals_async."""
@@ -193,20 +126,3 @@ class MahjongMultiAgentsEvaluator:
         except RuntimeError:
             # No event loop running, use asyncio.run normally
             return asyncio.run(self.evals_async(dataset))
-
-    def result_to_df(self, eval_results: List[EvalResult]) -> pd.DataFrame:
-        records = []
-        for result in eval_results:
-            record = result.model_dump(exclude={"hand"})
-            hand_dict = result.hand.model_dump()
-            for key, value in hand_dict.items():
-                record[f"hand_{key}"] = value
-
-            # Convert boolean values to integers
-            for key, value in record.items():
-                if isinstance(value, bool):
-                    record[key] = int(value)
-
-            records.append(record)
-
-        return pd.DataFrame(records)
