@@ -1,16 +1,42 @@
+# Environment files
 .env
+
+# Python cache
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
 .venv/
-.tox/
+venv/
+
+# Testing and linting cache
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
-.vscode/
-.DS_Store
-.idea/
-.pytest_cache/
-.ruff_cache/
+.tox/
+.coverage
+coverage.xml
+htmlcov/
+.uv-cache/
 
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Application logs
 api.log
-dist/
 agent_logs/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Test reports
+test-report.html

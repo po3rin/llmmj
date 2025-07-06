@@ -1,50 +1,30 @@
-.PHONY: help format lint check install clean test
+# Makefile for llmmj project
 
-# Default target
+.PHONY: help install test clean lint format setup
+
 help:
-	@echo "Available targets:"
-	@echo "  format  - Format code with isort and ruff"
-	@echo "  lint    - Lint code with ruff"
-	@echo "  check   - Check code formatting and linting"
-	@echo "  test    - Run tests with pytest"
-	@echo "  install - Install dependencies"
-	@echo "  clean   - Clean cache and temporary files"
+	@echo "Available commands:"
+	@echo "  make install    - Install dependencies"
+	@echo "  make test       - Run tests"
+	@echo "  make lint       - Run linting"
+	@echo "  make format     - Format code"
+	@echo "  make clean      - Clean cache files"
+	@echo "  make setup      - Initial setup"
 
-# Format code
-format:
-	@echo "Running isort..."
-	uv run --group dev isort .
-	@echo "Running ruff format..."
-	uv run --group dev ruff format .
-	@echo "Code formatting completed!"
-
-# Lint code
-lint:
-	@echo "Running ruff check..."
-	uv run --group dev ruff check .
-
-# Check code (lint + format check)
-check:
-	@echo "Checking code formatting..."
-	uv run --group dev ruff format --check .
-	@echo "Running linter..."
-	uv run --group dev ruff check .
-	@echo "All checks passed!"
-
-# Install dependencies
 install:
-	uv sync --all-groups
+	uv sync
 
-# Run tests
 test:
-	@echo "Running tests with pytest..."
-	uv run pytest tests/ -v
-	@echo "Tests completed!"
+	uv run pytest
 
-# Clean cache and temporary files
+lint:
+	uv run ruff check .
+
+format:
+	uv run ruff format .
+
 clean:
-	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
-	find . -type f -name "*.pyc" -delete 2>/dev/null || true
-	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
-	find . -type d -name ".ruff_cache" -exec rm -rf {} + 2>/dev/null || true
-	@echo "Cache files cleaned!"
+	rm -rf __pycache__ .pytest_cache .coverage htmlcov .ruff_cache
+
+setup: install
+	@echo "Setup complete!"
